@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}
+Login
+{% endblock %}
+
+{% block messages%}
+{% if form.errors %}
+<div class="alert alert-danger" role="alert">
+    <strong>Error in the form!</strong> Please correct the errors.
+</div>
+{{ form.errors }}
+{% endif %}
+{% if messages %}
+<div class="alert alert-info" role="alert">
+    <ul class="list-unstyled">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <h2>Login</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_username">Username:</label>
+            <input type="text" name="username" id="id_username">
+        </div>
+        <div class="form-group">
+            <label for="id_password">Password:</label>
+            <input type="password" name="password" id="id_password">
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Login" id="login_button">
+        </div>
+    </form>
+    <p>Don't have an account? <a href="{% url 'register1' %}">Register</a></p>
+</div>
+
+<script>
+    document.getElementById('id_username').addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            document.getElementById('id_password').focus();
+        }
+    });
+
+    document.getElementById('id_password').addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            document.getElementById('login_button').click();
+        }
+    });
+</script>
+{% endblock %}
