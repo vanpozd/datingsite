@@ -12,16 +12,16 @@ ROLE_CHOICES = (
 
 class CustomUserManager(BaseUserManager):
 
-    def create_user(self, email, password, **extra_fields):
-        if not email:
-            raise ValueError(('The Email must be set'))
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
+    def create_user(self, username, password, **extra_fields):
+        if not username:
+            raise ValueError(('The username must be set'))
+        username = self.normalize_username(username)
+        user = self.model(username=username, **extra_fields)
         user.set_password(password)
         user.save()
         return user
 
-    def create_superuser(self, email, password, **extra_fields):
+    def create_superuser(self, username, password, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
@@ -31,14 +31,14 @@ class CustomUserManager(BaseUserManager):
             raise ValueError(('Superuser must have is_staff=True.'))
         if extra_fields.get('is_superuser') is not True:
             raise ValueError(('Superuser must have is_superuser=True.'))
-        return self.create_user(email, password, **extra_fields)
+        return self.create_user(username, password, **extra_fields)
 
 
 class CustomUser(AbstractBaseUser):
 
     first_name = models.CharField(max_length=20, default=None, null=True)
     last_name = models.CharField(max_length=20, default=None, blank=True, null=True)
-    email = models.CharField(max_length=100, unique=True, default=None, null=False)
+    username = models.CharField(max_length=100, unique=True, default=None, null=False)
     password = models.CharField(default=None, max_length=255, null=False)
     created_at = models.DateTimeField(editable=False, auto_now=datetime.datetime.now())
     updated_at = models.DateTimeField(auto_now=datetime.datetime.now())
@@ -51,11 +51,11 @@ class CustomUser(AbstractBaseUser):
     is_active = models.BooleanField(default=False)
     id = models.AutoField(primary_key=True)
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'username'
     objects = CustomUserManager()
 
     def __str__(self):
-        return f"'id': {self.id}, 'first_name': '{self.first_name}', 'last_name': '{self.last_name}', 'email': '{self.email}', 'created_at': {int(self.created_at.timestamp())}, 'updated_at': {int(self.updated_at.timestamp())}, 'role': {self.role}, 'is_active': {self.is_active}"  # 'password': '{self.password}', \
+        return f"'id': {self.id}, 'first_name': '{self.first_name}', 'last_name': '{self.last_name}', 'username': '{self.username}', 'created_at': {int(self.created_at.timestamp())}, 'updated_at': {int(self.updated_at.timestamp())}, 'role': {self.role}, 'is_active': {self.is_active}"  # 'password': '{self.password}', \
 
     def __repr__(self):
         return f"{CustomUser.__name__}(id={self.id})"
@@ -66,8 +66,8 @@ class CustomUser(AbstractBaseUser):
         return custom_user if custom_user else None
 
     @staticmethod
-    def get_by_email(email):
-        custom_user = CustomUser.objects.filter(email=email).first()
+    def get_by_username(username):
+        custom_user = CustomUser.objects.filter(username=username).first()
         return custom_user if custom_user else None
 
     @staticmethod
@@ -79,10 +79,10 @@ class CustomUser(AbstractBaseUser):
         return False
 
     @staticmethod
-    def create(email, password, first_name=None, middle_name=None, last_name=None):
-        if len(first_name) <= 20 and len(middle_name) <= 20 and len(last_name) <= 20 and len(email) <= 100 and len(
-                email.split('@')) == 2 and len(CustomUser.objects.filter(email=email)) == 0:
-            custom_user = CustomUser(email=email, password=password, first_name=first_name, middle_name=middle_name,
+    def create(username, password, first_name=None, middle_name=None, last_name=None):
+        if len(first_name) <= 20 and len(middle_name) <= 20 and len(last_name) <= 20 and len(username) <= 100 and len(
+                username.split('@')) == 2 and len(CustomUser.objects.filter(username=username)) == 0:
+            custom_user = CustomUser(username=username, password=password, first_name=first_name, middle_name=middle_name,
                                      last_name=last_name)
             custom_user.save()
             return custom_user
@@ -92,7 +92,7 @@ class CustomUser(AbstractBaseUser):
         return {'id': self.id,
                 'first_name': f'{self.first_name}',
                 'last_name': f'{self.last_name}',
-                'email': f'{self.email}',
+                'username': f'{self.username}',
                 'created_at': int(self.created_at.timestamp()),
                 'updated_at': int(self.updated_at.timestamp()),
                 'role': self.role,
@@ -106,7 +106,7 @@ class CustomUser(AbstractBaseUser):
                role=None,
                is_active=None):
         
-        user_to_update = CustomUser.objects.filter(email=self.email).first()
+        user_to_update = CustomUser.objects.filter(username=self.username).first()
         if first_name != None and len(first_name) <= 20:
             user_to_update.first_name = first_name
         if last_name != None and len(last_name) <= 20:

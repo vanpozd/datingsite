@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render,redirect
+from django.forms import ValidationError
 
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -98,16 +99,14 @@ def user_register1(request):
     if request.method == "POST":
         form = forms.UserCredentialsForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data['username']
-            if CustomUser.objects.filter(email=email).exists():
-                messages.error(request, 'Email already exists')
+            try:
+                form.form_validation()
+            except ValidationError as e:
+                messages.error(request, str(e)[2:-2])
                 return render(request, 'register1.html', {'form': form})
-            
-            newuser = form.save(commit=False)
-            newuser.set_password(form.cleaned_data['password2'])
-            newuser.save()
-            request.session['user_id'] = newuser.id
+            newuser = form.save()
             login(request, newuser)
+            request.session['user_id'] = newuser.id
             return redirect('register2')
         else:
             messages.error(request, 'Invalid input')
@@ -128,7 +127,7 @@ def user_register2(request):
         form = forms.UserNameForm(request.POST, instance=user)
         if form.is_valid():
             form.save(user = user)
-            return redirect('register3')
+            return redirect('recommendations')
         else:
             messages.error(request, 'Invalid input')
     else:
