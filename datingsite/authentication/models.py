@@ -38,6 +38,7 @@ class CustomUser(AbstractBaseUser):
 
     first_name = models.CharField(max_length=20, default=None, null=True)
     last_name = models.CharField(max_length=20, default=None, blank=True, null=True)
+    age = models.IntegerField(default=None, null=True)
     username = models.CharField(max_length=100, unique=True, default=None, null=False)
     password = models.CharField(default=None, max_length=255, null=False)
     created_at = models.DateTimeField(editable=False, auto_now=datetime.datetime.now())

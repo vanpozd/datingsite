@@ -38,14 +38,16 @@ class UserCredentialsForm(forms.ModelForm):
 class UserNameForm(forms.ModelForm):
     first_name = forms.CharField(label='First Name', max_length=30)
     last_name = forms.CharField(label='Last Name', max_length=30)
+    age = forms.IntegerField(label='Age')
 
     class Meta:
         model = CustomUser
-        fields = ('first_name', 'last_name')
+        fields = ('first_name', 'last_name', 'age')
 
     def save(self, user, commit=True):
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
+        user.age = self.cleaned_data['age']
         user.save()
         return user
 
@@ -60,7 +62,6 @@ class UserPhotoForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super(UserPhotoForm, self).save(commit=False)
-        # Добавьте любую дополнительную логику здесь
         if commit:
             user.save()
         return user

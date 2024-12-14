@@ -77,7 +77,7 @@ def user_login(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                messages.success(request, f'Welcome {username}!')
+                messages.success(request, f'Welcome back {username}!')
                 return redirect('recommendations')
             else:
                 messages.error(request, 'Invalid username or password')
@@ -127,7 +127,7 @@ def user_register2(request):
         form = forms.UserNameForm(request.POST, instance=user)
         if form.is_valid():
             form.save(user = user)
-            return redirect('recommendations')
+            return redirect('register3')
         else:
             messages.error(request, 'Invalid input')
     else:
@@ -150,5 +150,3 @@ def user_register3(request):
     else:
         form = forms.UserPhotoForm(instance=user)
     return render(request, 'register3.html', {'form': form})
-
-"""доробити реєстрацію3, додати валідацію, додати фото, додати обмеження о пароля"""

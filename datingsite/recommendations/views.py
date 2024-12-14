@@ -7,10 +7,17 @@ from django.shortcuts import render,redirect
 # from .serializers import UserSerializer
 # from .models import CustomUser
 from django.contrib import messages
+from authentication.models import CustomUser
 # from . import forms
 
 def recom(request):
+	user = request.user
 	if request.user.is_authenticated:
-		return render(request, 'recommendations.html')
+		users = CustomUser.objects.exclude(id=request.user.id).filter(age__gte=user.age-2, age__lte=user.age+2)
+		context = {
+			'users': users
+		}
+		print(users)
+		return render(request, 'recommendations.html', context)
 	else:
 		return redirect('login')

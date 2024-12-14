@@ -8,20 +8,123 @@
 	<title>Find your person!</title>
 </head>
 <style>
-
+	.recommendation_cont {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		border: 1px solid black;
+		width: 600px;
+		height: 800px;
+		margin: auto;
+	}
+	.user_images {
+		display: grid;
+		grid-template-columns: 1fr;
+		grid-template-rows: repeat(3, 1fr);
+		gap: 10px;
+		width: 100%;
+		height: 70%;
+	}
+	.user_name_age_desc{
+		display: flex;
+		flex-direction: column;
+		height: 30%;
+		width: 100%;
+	}
+	.user_name_age {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		height: 50px;
+		width: 80%;
+		padding: 5%;
+		margin: 0 auto 0 auto;
+	}
+	.button_cont {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
+		height: 50px;
+		width: 80%;
+		margin: 0 auto 0 auto;
+	}
+	.user_name {
+		font-size: 20px;
+	}
+	.user_age {
+		font-size: 20px;
+	}
+	.user_desc_cont {
+		padding: 5%;
+		margin: 0 auto 0 auto;
+	}
+	.user_desc {
+		font-size: 15px;
+	}
 </style>
 
 <body>
-	{% include 'navbar.html' %}
-	{% block messages%}
-	{% if messages %}
-	{% for message in messages %}
-	{{ message }}
-	{% endfor %}
-	{% endif %}
-	{% endblock %}
-
-	Hello World!
+	{% include 'navbar.html' %}   
+	<div class="{% if form.errors %}alert alert-danger{% else %}alert alert-success{% endif %} page_wrapper">
+		{% block messages%}
+			{% if messages %}
+				{% for message in messages %}
+					{{ message }}
+				{% endfor %}
+			{% endif %}
+			{% if not messages %}
+				<style>
+					.page_wrapper {
+						display: none;
+					}
+				</style>
+			{% endif %}
+		{% endblock %}
+    </div>
+	<div class="recommendation_cont">
+		<div class="user_images">
+			<img src="" alt="User Photo 1">
+			<img src="" alt="User Photo 2">
+			<img src="" alt="User Photo 3">
+		</div>
+		<div class="user_name_age_desc">
+			<div class="user_name_age">		
+				<span class="user_name">
+					<!-- {{ user_name }} -->
+					Ivan Pozdniakov
+				</span>
+				<span class="user_age">
+					23
+				</span>
+			</div>
+			<div class="user_desc_cont">
+				<p class="user_desc">Test text to check if this forks ok</p>
+			</div>
+			<div class="button_cont">
+				<button type="button" class="btn btn-success">Like</button>
+				<button type="button" class="btn btn-primary">Report</button>
+				<button type="button" class="btn btn-danger">Dislike</button>
+			</div>
+		</div>
+	</div>
 </body>
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const like_button = document.querySelector('.btn-success');
+		const report_button = document.querySelector('.btn-primary');
+		const dislike_button = document.querySelector('.btn-danger');
 
+		like_button.addEventListener('click', function() {
+			alert('You liked this person!');
+		});
+
+		report_button.addEventListener('click', function() {
+			alert('You reported this person!');
+		});
+
+		dislike_button.addEventListener('click', function() {
+			alert('You disliked this person!');
+		});
+	});
+</script>
 </html>
