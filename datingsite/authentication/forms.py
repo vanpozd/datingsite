@@ -39,6 +39,13 @@ class UserNameForm(forms.ModelForm):
     first_name = forms.CharField(label='First Name', max_length=30)
     last_name = forms.CharField(label='Last Name', max_length=30)
     age = forms.IntegerField(label='Age')
+    sex = forms.CharField(label='Male/Female', max_length=10)
+    description = forms.CharField(label='Description')
+    hobby = forms.CharField(label='Hobby', max_length=100)
+    main_goal = forms.CharField(label='Main Goal', max_length=100)
+    inst = forms.CharField(label='Instagram', max_length=100)
+    telegram = forms.CharField(label='Telegram', max_length=100)
+    x_network = forms.CharField(label='X Network', max_length=100)
 
     class Meta:
         model = CustomUser
@@ -48,8 +55,15 @@ class UserNameForm(forms.ModelForm):
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
         user.age = self.cleaned_data['age']
+        user.sex = self.cleaned_data['sex']
+        user.hobby = self.cleaned_data['hobby']
+        user.main_goal = self.cleaned_data['main_goal']
+        user.inst = self.cleaned_data['inst']
+        user.telegram = self.cleaned_data['telegram']
+        user.x_network = self.cleaned_data['x_network']
+        
         if self.cleaned_data['age'] == None:
-            user.age = 18
+            raise forms.ValidationError("Age is required")
         user.save()
         return user
 
@@ -57,15 +71,21 @@ class UserPhotoForm(forms.ModelForm):
     photo1 = forms.ImageField(label='photo1')
     photo2 = forms.ImageField(label='photo2')
     photo3 = forms.ImageField(label='photo3')
+    photo4 = forms.ImageField(label='photo4')
+    photo5 = forms.ImageField(label='photo5')
+    photo6 = forms.ImageField(label='photo6')
 
     class Meta:
         model = CustomUser
-        fields = ('photo1', 'photo2', 'photo3')
+        fields = ('photo1', 'photo2', 'photo3', 'photo4', 'photo5', 'photo6')
 
     def save(self, user, commit=True):
         user.photo1 = self.cleaned_data['photo1']
         user.photo2 = self.cleaned_data['photo2']
         user.photo3 = self.cleaned_data['photo3']
+        user.photo4 = self.cleaned_data['photo4']
+        user.photo5 = self.cleaned_data['photo5']
+        user.photo6 = self.cleaned_data['photo6']
         if commit:
             user.save()
         return user

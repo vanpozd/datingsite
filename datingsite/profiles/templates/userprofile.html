@@ -7,7 +7,9 @@
 	<title>Settings</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 </head>
+<style>
 
+</style>
 <body>
 	{% load static %}
 	{% include 'navbar.html' %}
@@ -19,12 +21,81 @@
 		{% endif %}
 	{% endblock %}
 	{% if user %}
-		<div class="container">
+		<div class="container-fluid">
 			<div class="row">
 				<div class="col-md-6">
-					<h2>{{ user.username }}</h2>
-					<img src="{{ user.photo1.url }}" alt="alt">
-					<p>{{ user.last_login }}</p>
+					<div class="row">
+						<div class="col-md-6">
+							<h2>{{ user.last_name }} {{ user.first_name }}</h2>
+							<span>{{ user.sex }}</span>
+						</div>		
+						<div class="col-md-6">
+							<h2>{{ user.age }}</h2>
+						</div>
+					</div>
+					{% if user.description %}
+						<div class="row">
+							<div class="col-md-6">
+								<p>{{ user.description }}</p>
+							</div>						
+						</div>
+					{% endif %}
+					{% if user.hobby %}
+						<div class="row">
+							<div class="col-md-6">
+								<h2>Hobby</h2>
+								<p>{{ user.hobby }}</p>
+							</div>
+						</div>
+					{% endif %}
+					{% if user.main_goal %}
+						<div class="row">
+							<div class="col-md-6">
+								<h2>Main goal:</h2><p>{{ user.main_goal }}</p>
+							</div>
+						</div>
+					{% endif %}
+					{% if user.inst or user.telegram or user.x_network %}
+						<div class="row">
+							<div class="col-md-6">
+								<h2>Contacts:</h2>
+								{% if user.inst %}
+									<p>{{ user.inst }}</p>
+								{% endif %}
+								{% if user.telegram %}
+									<p>{{ user.telegram }}</p>
+								{% endif %}
+								{% if user.x_network %}
+									<p>{{ user.x_network }}</p>
+								{% endif %}
+							</div>
+						</div>
+					{% endif %}
+				</div>
+				<div class="col-md-3">
+					{% if user.photo1 %}
+						<img src="{{ user.photo1.url }}" alt="alt" style="width: 400px;padding: 10px;">
+					{% endif %}
+					{% if user.photo3 %}
+						<img src="{{ user.photo3.url }}" alt="alt" style="width: 400px;padding: 10px;">
+					{% endif %}
+					{% if user.photo5 %}
+						<img src="{{ user.photo5.url }}" alt="alt" style="width: 400px;padding: 10px;">
+					{% endif %}
+				</div>
+				<div class="col-md-3">
+					{% if user.photo2 %}
+						<img src="{{ user.photo2.url }}" alt="alt" style="width: 400px;padding: 10px;">
+					{% endif %}
+					{% if user.photo4 %}
+						<img src="{{ user.photo4.url }}" alt="alt" style="width: 400px;padding: 10px;">
+					{% endif %}
+					{% if user.photo2 %}
+						<img src="{{ user.photo6.url }}" alt="alt" style="width: 400px;padding: 10px;">
+					{% endif %}
+				</div>
+			</div>
+		</div>
 	{% endif %}
 </body>
 </html>
