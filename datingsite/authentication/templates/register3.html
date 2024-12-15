@@ -27,21 +27,8 @@ Register
 	<h2>Registration</h2>
 	<form method="post" enctype="multipart/form-data">
 		{% csrf_token %}
-		<div class="form-group">
-			<label for="profile_image">Profile Image:</label>
-			<input type="file" name="profile_image" id="photo1" accept="image/*">
-		</div>
-		<div class="form-group">
-			<label for="cover_image">Cover Image:</label>
-			<input type="file" name="cover_image" id="photo2" accept="image/*">
-		</div>
-		<div class="form-group">
-			<label for="additional_image">Additional Image:</label>
-			<input type="file" name="additional_image" id="photo3" accept="image/*">
-		</div>
-		<div class="form-group">
-			<input type="submit" value="Confirm" id="register_button">
-		</div>
+		{{ form.as_p }}
+		<button type="submit">Submit</button>
 	</form>
 </div>
 

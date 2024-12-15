@@ -9,6 +9,7 @@
 </head>
 
 <body>
+	{% load static %}
 	{% include 'navbar.html' %}
 	{% block messages%}
 		{% if messages %}
@@ -18,7 +19,12 @@
 		{% endif %}
 	{% endblock %}
 	{% if user %}
-
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6">
+					<h2>{{ user.username }}</h2>
+					<img src="{{ user.photo1.url }}" alt="alt">
+					<p>{{ user.last_login }}</p>
 	{% endif %}
 </body>
 </html>

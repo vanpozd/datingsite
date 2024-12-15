@@ -140,12 +140,13 @@ def user_register3(request):
         return redirect('register1')
     user = CustomUser.objects.get(id=user_id)
     if request.method == "POST":
-        form = forms.UserPhotoForm(request.POST, request.FILES, instance=user)
+        form = forms.UserPhotoForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            form.save(user = user)
             messages.success(request, 'Registration complete!')
             return redirect('recommendations')
         else:
+            print(form.errors)
             messages.error(request, 'Invalid input')
     else:
         form = forms.UserPhotoForm(instance=user)

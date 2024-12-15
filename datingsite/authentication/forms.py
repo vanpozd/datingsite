@@ -48,20 +48,24 @@ class UserNameForm(forms.ModelForm):
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
         user.age = self.cleaned_data['age']
+        if self.cleaned_data['age'] == None:
+            user.age = 18
         user.save()
         return user
 
 class UserPhotoForm(forms.ModelForm):
-    photo1 = forms.ImageField(label='Photo1')
-    photo2 = forms.ImageField(label='Photo2')
-    photo3 = forms.ImageField(label='Photo3')
+    photo1 = forms.ImageField(label='photo1')
+    photo2 = forms.ImageField(label='photo2')
+    photo3 = forms.ImageField(label='photo3')
 
     class Meta:
         model = CustomUser
         fields = ('photo1', 'photo2', 'photo3')
 
-    def save(self, commit=True):
-        user = super(UserPhotoForm, self).save(commit=False)
+    def save(self, user, commit=True):
+        user.photo1 = self.cleaned_data['photo1']
+        user.photo2 = self.cleaned_data['photo2']
+        user.photo3 = self.cleaned_data['photo3']
         if commit:
             user.save()
         return user

@@ -14,10 +14,6 @@ def recom(request):
 	user = request.user
 	if request.user.is_authenticated:
 		users = CustomUser.objects.exclude(id=request.user.id).filter(age__gte=user.age-2, age__lte=user.age+2)
-		context = {
-			'users': users
-		}
-		print(users)
-		return render(request, 'recommendations.html', context)
+		return render(request, 'recommendations.html', {'recom_users': users})
 	else:
 		return redirect('login')
