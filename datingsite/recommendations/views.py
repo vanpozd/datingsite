@@ -49,6 +49,7 @@ def handle_action(request):
                 'images': images
             }
         else:
+            users = CustomUser.objects.exclude(id=request.user.id)
             response_data = {
                 'message': 'No more users'
             }

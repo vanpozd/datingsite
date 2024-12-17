@@ -37,7 +37,7 @@ class CustomUserManager(BaseUserManager):
 class CustomUser(AbstractBaseUser):
 
     first_name = models.CharField(max_length=20, default=None, null=True)
-    last_name = models.CharField(max_length=20, default=None, blank=True, null=True)
+    last_name = models.CharField(max_length=20, default=None, blank=True)
     age = models.IntegerField(default=None, null=True)
     sex = models.CharField(max_length=10, default=None, null=True)
     main_goal = models.CharField(max_length=100, default=None, null=True)

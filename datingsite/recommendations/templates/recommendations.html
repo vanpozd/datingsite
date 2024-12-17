@@ -2,167 +2,194 @@
 <html lang="en">
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-	<title>Find your person!</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <title>Find Your Person!</title>
+    <style>
+        /* Основной контейнер */
+        .container {
+            max-width: 600px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+
+		.button-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        /* Контейнер фотографии */
+        #image-container {
+            width: 360px;
+            height: 360px;
+            margin: auto;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        #user_images {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 10px;
+        }
+
+        /* Стили для заголовков и текста */
+        .user-description {
+            font-size: 1.1rem;
+            color: #555;
+            text-align: center;
+        }
+
+        .user-info {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .user-info p {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .social-links .btn {
+            font-size: 0.9rem;
+            padding: 5px 10px;
+        }
+
+        .btn-group button {
+            width: 100px;
+        }
+
+        /* Текст для разделов */
+        .lead {
+            font-size: 1.2rem;
+            color: #333;
+        }
+    </style>
 </head>
-<style>
-	.recommendation_cont {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		border: 1px solid black;
-		width: 600px;
-		height: 900px;
-		margin: auto;
-	}
-	.user_images {
-		display: grid;
-		grid-template-columns: 1fr;
-		grid-template-rows: repeat(3, 1fr);
-		gap: 10px;
-		width: 100%;
-		height: 70%;
-	}
-	.user_name_age_desc{
-		display: flex;
-		flex-direction: column;
-		height: 30%;
-		width: 100%;
-	}
-	.user_name_age {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		height: 50px;
-		width: 80%;
-		padding: 5%;
-		margin: 0 auto 0 auto;
-	}
-	.button_cont {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-around;
-		height: 50px;
-		width: 80%;
-		margin: 0 auto 0 auto;
-	}
-	.user_name {
-		font-size: 20px;
-	}
-	.user_age {
-		font-size: 20px;
-	}
-	.user_desc_cont {
-		padding: 5%;
-		margin: 0 auto 0 auto;
-	}
-	.user_desc {
-		font-size: 15px;
-	}
-</style>
 
 <body>
-	{% include 'navbar.html' %}   
-	<div class="{% if form.errors %}alert alert-danger{% else %}alert alert-success{% endif %} page_wrapper">
-		{% block messages%}
-			{% if messages %}
-				{% for message in messages %}
-					{{ message }}
-				{% endfor %}
-			{% endif %}
-			{% if not messages %}
-				<style>
-					.page_wrapper {
-						display: none;
-					}
-				</style>
-			{% endif %}
-		{% endblock %}
+    {% include 'navbar.html' %}
+    <div class="container mt-4">
+        <!-- Фото пользователя -->
+        <div id="image-container" class="text-center mb-4">
+            <img id="user_images" src="{{ images.0 }}" alt="User photo">
+        </div>
+
+		<div class="button-row">
+            <button type="button" class="btn btn-secondary" onclick="navigate_photos('prev')">Previous</button>
+            <button type="button" class="btn btn-secondary" onclick="navigate_photos('next')">Next</button>
+        </div>
+
+        <!-- Информация о пользователе -->
+        <div class="text-center mb-4">
+            <h4 id="user_name">{{ rec_user.first_name }} {{ rec_user.last_name }}, <span id="user_age">{{ rec_user.age }}</span></h4>
+            <p class="text-muted" id="user_sex">{{ rec_user.sex }}</p>
+        </div>
+
+        <!-- Дополнительная информация -->
+        <div class="user-info card p-3 mb-4">
+            <h5 class="card-title text-center mb-3">About Me</h5>
+			<div class="user-description text-center mb-4">
+				<p class="text-muted lead" id="user_desc">
+					{% if rec_user.description%}
+						{{ rec_user.description }}
+					{% else %}
+						No description provided.
+					{% endif %}
+				</p>
+			</div>
+            
+			<div class="row">
+                <div class="col-md-6">
+                    <p><strong>Hobby:</strong> {{ rec_user.hobby }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Main Goal:</strong> {{ rec_user.main_goal }}</p>
+                </div>
+            </div>
+            <hr>
+            <div class="social-links text-center">
+                <h6>Connect with me:</h6>
+                <p>
+                    <a href="https://t.me/{{ rec_user.telegram }}" target="_blank" class="btn btn-outline-info btn-sm mx-1">Telegram</a>
+                    <a href="https://instagram.com/{{ rec_user.inst }}" target="_blank" class="btn btn-outline-danger btn-sm mx-1">Instagram</a>
+                    <a href="https://x.com/{{ rec_user.x_network }}" target="_blank" class="btn btn-outline-dark btn-sm mx-1">X</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Кнопки действий -->
+        <div class="btn-group d-flex justify-content-around">
+            <button type="button" class="btn btn-success" onclick="handle_action('like', '{{ rec_user.id }}')">Like</button>
+            <button type="button" class="btn btn-primary" onclick="handle_action('report', '{{ rec_user.id }}')">Report</button>
+            <button type="button" class="btn btn-danger" onclick="handle_action('dislike', '{{ rec_user.id }}')">Dislike</button>
+        </div>
     </div>
-	<div class="recommendation_cont">
-		<div class="user_images">
-			<img src="{{ images.0 }}" alt="User photo" style="width: 596px;">
-			<div class="photo_navigation">
-				<button type="button" class="btn btn-secondary" onclick="navigate_photos('prev')">Previous</button>
-				<button type="button" class="btn btn-secondary" onclick="navigate_photos('next')">Next</button>
-			</div>
-		</div>
-		<div class="user_name_age_desc">
-			<div class="user_name_age">        
-				<span class="user_name">
-					{{ rec_user.first_name }} {{ rec_user.last_name }}
-				</span>
-				<span class="user_age">
-					{{ rec_user.age }}
-				</span>
-			</div>
-			<div class="user_desc_cont">
-				<p class="user_desc">{{ rec_user.description }}</p>
-			</div>
-			<div class="button_cont">
-				<button type="button" class="btn btn-success" onclick="handle_action('like', '{{rec_user.id}}')">Like</button>
-				<button type="button" class="btn btn-primary" onclick="handle_action('report', '{{rec_user.id}}')">Report</button>
-				<button type="button" class="btn btn-danger" onclick="handle_action('dislike', '{{rec_user.id}}')">Dislike</button>
-			</div>
-		</div>
-	</div>
-</body>
-<script>
-    let currentPhotoIndex = 0;
-    // let images = JSON.parse('{{ images|escapejs }}');
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const like_button = document.querySelector('.btn-success');
-        const report_button = document.querySelector('.btn-primary');
-        const dislike_button = document.querySelector('.btn-danger');
-    });
+    <script>
+        let currentPhotoIndex = 0;
+        let images = {{ images|safe }};  // Изначальный список фотографий
 
-    function getCSRFToken() {
-        return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    }
-
-    function handle_action(type, user_id) {
-        fetch('/handle_action/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }},'
-            },
-            body: JSON.stringify({
-                type: type,
-                user_id: user_id
+        function handle_action(type, user_id) {
+            fetch('/handle_action/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: JSON.stringify({
+                    type: type,
+                    user_id: user_id
+                })
             })
-        })
-        .then(response => response.json())
-        .then(result => {
-            console.log(result);
-            if (result.user_id) {
-                // Update the user block with the new user data
-                document.querySelector('.user_name').innerText = result.user_first_name + ' ' + result.user_last_name;
-                document.querySelector('.user_age').innerText = result.user_age;
-                document.querySelector('.user_desc').innerText = result.user_desc;
-                document.querySelector('.btn-success').setAttribute('onclick', `handle_action('like', ${result.user_id})`);
-                document.querySelector('.btn-primary').setAttribute('onclick', `handle_action('report', ${result.user_id})`);
-                document.querySelector('.btn-danger').setAttribute('onclick', `handle_action('dislike', ${result.user_id})`);
-                // Update images
-                images = result.images;
-                currentPhotoIndex = 0;
-                document.querySelector('.user_images img').src = images[currentPhotoIndex];
-            } else {
-                alert(result.message);
-            }
-        });
-    }
+            .then(response => response.json())
+            .then(result => {
+                if (result.user_id) {
+                    // Обновляем данные пользователя
+                    document.getElementById('user_name').innerText = result.user_first_name + ' ' + result.user_last_name + ', ' + result.user_age;
+                    document.getElementById('user_sex').innerText = result.user_sex;
+                    document.getElementById('user_desc').innerText = result.user_desc;
 
-    function navigate_photos(direction) {
-        if (direction === 'prev') {
-            currentPhotoIndex = (currentPhotoIndex - 1 + images.length) % images.length;
-        } else if (direction === 'next') {
-            currentPhotoIndex = (currentPhotoIndex + 1) % images.length;
+                    // Обновляем кнопки действий с новым user_id
+                    document.querySelector('.btn-success').setAttribute('onclick', `handle_action('like', ${result.user_id})`);
+                    document.querySelector('.btn-primary').setAttribute('onclick', `handle_action('report', ${result.user_id})`);
+                    document.querySelector('.btn-danger').setAttribute('onclick', `handle_action('dislike', ${result.user_id})`);
+
+                    // Обновляем изображения и сбрасываем индекс
+                    images = result.images; // Новые фотографии
+                    currentPhotoIndex = 0;
+                    document.getElementById('user_images').src = images[0];
+                } else {
+                    alert(result.message || "Error updating user data!");
+                }
+            });
         }
-        document.querySelector('.user_images img').src = images[currentPhotoIndex];
-    }
-</script>
+
+        function navigate_photos(direction) {
+            if (direction === 'prev') {
+                currentPhotoIndex = (currentPhotoIndex - 1 + images.length) % images.length;
+            } else if (direction === 'next') {
+                currentPhotoIndex = (currentPhotoIndex + 1) % images.length;
+            }
+            document.getElementById('user_images').src = images[currentPhotoIndex];
+        }
+    </script>
+</body>
+
 </html>

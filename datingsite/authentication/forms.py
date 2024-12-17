@@ -35,9 +35,41 @@ class UserCredentialsForm(forms.ModelForm):
             user.save()
         return user
 
+# class UserNameForm(forms.ModelForm):
+#     first_name = forms.CharField(label='First Name', max_length=30)
+#     last_name = forms.CharField(label='Last Name', max_length=30)
+#     age = forms.IntegerField(label='Age')
+#     sex = forms.ChoiceField(label='Sex', choices=[('male', 'Male'), ('female', 'Female')])
+#     description = forms.CharField(label='Description')
+#     hobby = forms.CharField(label='Hobby', max_length=100)
+#     main_goal = forms.ChoiceField(label='Main Goal', choices=[('dating', 'Dating'), ('friendship', 'Friendship')])
+#     inst = forms.CharField(label='Instagram', max_length=100)
+#     telegram = forms.CharField(label='Telegram', max_length=100)
+#     x_network = forms.CharField(label='X Network', max_length=100)
+
+#     class Meta:
+#         model = CustomUser
+#         fields = ('first_name', 'last_name', 'age')
+
+#     def save(self, user, commit=True):
+#         user.first_name = self.cleaned_data['first_name']
+#         user.last_name = self.cleaned_data['last_name']
+#         user.description = self.cleaned_data['description']
+#         user.age = self.cleaned_data['age']
+#         user.sex = self.cleaned_data['sex']
+#         user.hobby = self.cleaned_data['hobby']
+#         user.main_goal = self.cleaned_data['main_goal']
+#         user.inst = self.cleaned_data['inst']
+#         user.telegram = self.cleaned_data['telegram']
+#         user.x_network = self.cleaned_data['x_network']
+        
+#         if self.cleaned_data['age'] == None:
+#             raise forms.ValidationError("Age is required")
+#         user.save()
+#         return user
+
 class UserNameForm(forms.ModelForm):
     first_name = forms.CharField(label='First Name', max_length=30)
-    last_name = forms.CharField(label='Last Name', max_length=30)
     age = forms.IntegerField(label='Age')
     sex = forms.ChoiceField(label='Sex', choices=[('male', 'Male'), ('female', 'Female')])
     description = forms.CharField(label='Description')
