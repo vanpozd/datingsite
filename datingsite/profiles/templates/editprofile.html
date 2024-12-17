@@ -51,11 +51,7 @@
 					<div class="row">
 						<div class="col-md-6">
 							<h2>Description:</h2>
-							{% if user.description == None %}
-							<input type="text" name="description">
-							{% else %}
-							<input type="text" name="description" value="{{ user.description }}">
-							{% endif %}
+							<textarea name="description" id="description_text" style="width: 300px;">{{ user.description }}</textarea>
 						</div>
 					</div>
 					<div class="row">
@@ -74,7 +70,6 @@
 							</select>
 						</div>
 					</div>
-					{% if user.inst or user.telegram or user.x_network %}
 					<div class="row">
 						<div class="col-md-6">
 							<h2>Contacts:</h2>
@@ -89,7 +84,6 @@
 								value="{% if user.hobby != None %}{{ user.x_network }}{% endif %}">
 						</div>
 					</div>
-					{% endif %}
 				</div>
 				<div class="col-md-6">
 					{% for image in images %}

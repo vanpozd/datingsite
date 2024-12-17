@@ -83,27 +83,28 @@
     </div>
 	<div class="recommendation_cont">
 		<div class="user_images">
-			<img src="{{ user.photo1 }}" alt="User Photo 1">
-			<img src="" alt="User Photo 2">
-			<img src="" alt="User Photo 3">
+			<!-- User images here -->
+		<div class="photo_navigation">
+			<button type="button" class="btn btn-secondary" onclick="navigate_photos('prev')">Previous</button>
+			<button type="button" class="btn btn-secondary" onclick="navigate_photos('next')">Next</button>
+		</div>
 		</div>
 		<div class="user_name_age_desc">
-			<div class="user_name_age">		
+			<div class="user_name_age">        
 				<span class="user_name">
-					<!-- {{ user_name }} -->
-					Ivan Pozdniakov
+					{{ rec_user.first_name }} {{ rec_user.last_name }}
 				</span>
 				<span class="user_age">
-					23
+					{{ rec_user.age }}
 				</span>
 			</div>
 			<div class="user_desc_cont">
-				<p class="user_desc">Test text to check if this forks ok</p>
+				<p class="user_desc">{{ rec_user.description }}</p>
 			</div>
 			<div class="button_cont">
-				<button type="button" class="btn btn-success">Like</button>
-				<button type="button" class="btn btn-primary">Report</button>
-				<button type="button" class="btn btn-danger">Dislike</button>
+				<button type="button" class="btn btn-success" onclick="handle_action('like', '{{rec_user.id}}')">Like</button>
+				<button type="button" class="btn btn-primary" onclick="handle_action('report', '{{rec_user.id}}')">Report</button>
+				<button type="button" class="btn btn-danger" onclick="handle_action('dislike', '{{rec_user.id}}')">Dislike</button>
 			</div>
 		</div>
 	</div>
@@ -114,17 +115,39 @@
 		const report_button = document.querySelector('.btn-primary');
 		const dislike_button = document.querySelector('.btn-danger');
 
-		like_button.addEventListener('click', function() {
-			alert('You liked this person!');
-		});
-
-		report_button.addEventListener('click', function() {
-			alert('You reported this person!');
-		});
-
-		dislike_button.addEventListener('click', function() {
-			alert('You disliked this person!');
-		});
 	});
+
+function getCSRFToken() {
+    return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+}
+
+function handle_action(type, user_id) {
+    fetch('/handle_action/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: JSON.stringify({
+            type: type,
+            user_id: user_id
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+        console.log(result);
+        if (result.user_id) {
+            // Update the user block with the new user data
+            document.querySelector('.user_name').innerText = result.user_first_name + ' ' + result.user_last_name;
+            document.querySelector('.user_age').innerText = result.user_age;
+            document.querySelector('.user_desc').innerText = result.user_desc;
+            document.querySelector('.btn-success').setAttribute('onclick', `handle_action('like', ${result.user_id})`);
+            document.querySelector('.btn-primary').setAttribute('onclick', `handle_action('report', ${result.user_id})`);
+            document.querySelector('.btn-danger').setAttribute('onclick', `handle_action('dislike', ${result.user_id})`);
+        } else {
+            alert(result.message);
+        }
+    });
+}
 </script>
 </html>
