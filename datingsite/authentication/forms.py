@@ -54,6 +54,7 @@ class UserNameForm(forms.ModelForm):
     def save(self, user, commit=True):
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
+        user.description = self.cleaned_data['description']
         user.age = self.cleaned_data['age']
         user.sex = self.cleaned_data['sex']
         user.hobby = self.cleaned_data['hobby']

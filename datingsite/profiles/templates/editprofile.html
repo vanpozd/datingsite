@@ -7,90 +7,115 @@
 	<title>Edit profile</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 </head>
+
 <body>
 	{% load static %}
 	{% include 'navbar.html' %}
 	{% block messages%}
-		{% if messages %}
-			{% for message in messages %}
-				{{ message }}
-			{% endfor %}
-		{% endif %}
+	{% if messages %}
+	{% for message in messages %}
+	{{ message }}
+	{% endfor %}
+	{% endif %}
 	{% endblock %}
 	{% if user %}
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-md-10"></div>
-				<div class="col-md-2"><button class="btn btn-primary">Back</button></div>
-			</div>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-10"></div>
+			<div class="col-md-2"><button class="btn btn-primary" id="back_button">Back</button></div>
+		</div>
+		<form action="/profile/edit/" method="post">
+			{% csrf_token %}
 			<div class="row">
 				<div class="col-md-6">
 					<div class="row">
-						<div class="col-md-11">
-                            <input type="text" name="first_name" value="{{ user.first_name }}"><input type="text" name="last_name" value="{{ user.last_name }}">
-                            <input type="text" name="sex" value="{{ user.sex }}">
-						</div>		
+						<div class="col-md-8">
+							<h2>Name:</h2>
+							<input type="text" name="first_name" value="{{ user.first_name }}"><input type="text"
+								name="last_name" value="{{ user.last_name }}">
+							<div class="row">
+								<div class="col-md-6">
+									<br>
+									<select class="form-control" id="sex" name="sex" required>
+										<option value="male">Male</option>
+										<option value="female">Female</option>
+									</select>
+								</div>
+							</div>
+						</div>
 						<div class="col-md-1">
-                            <input type="text" name="age" value="{{ user.age }}">
+							<h2>Age:</h2>
+							<input type="text" name="age" value="{{ user.age }}">
 						</div>
 					</div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h2>Description:</h2>
-                            {% if user.description == None %}
-                                <input type="text" name="description">
-                            {% else %}
-                                <input type="text" name="description" value="{{ user.description }}">
-                            {% endif %}
-                        </div>						
-                    </div>
-					{% if user.hobby %}
-						<div class="row">
-							<div class="col-md-6">
-								<h2>Hobby</h2>
-								<p>{{ user.hobby }}</p>
-							</div>
+					<div class="row">
+						<div class="col-md-6">
+							<h2>Description:</h2>
+							{% if user.description == None %}
+							<input type="text" name="description">
+							{% else %}
+							<input type="text" name="description" value="{{ user.description }}">
+							{% endif %}
 						</div>
-					{% endif %}
-					{% if user.main_goal %}
-						<div class="row">
-							<div class="col-md-6">
-								<h2>Main goal:</h2><p>{{ user.main_goal }}</p>
-							</div>
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<h2>Hobby</h2>
+							<input type="text" name="hobby"
+								value="{% if user.hobby != None %}{{ user.hobby }}{% endif %}">
 						</div>
-					{% endif %}
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<h2>Main goal:</h2>
+							<select class="form-control" id="main_goal" name="main_goal" required>
+								<option value="dating">Dating</option>
+								<option value="friendship">Friendship</option>
+							</select>
+						</div>
+					</div>
 					{% if user.inst or user.telegram or user.x_network %}
-						<div class="row">
-							<div class="col-md-6">
-								<h2>Contacts:</h2>
-								{% if user.inst %}
-									<p>{{ user.inst }}</p>
-								{% endif %}
-								{% if user.telegram %}
-									<p>{{ user.telegram }}</p>
-								{% endif %}
-								{% if user.x_network %}
-									<p>{{ user.x_network }}</p>
-								{% endif %}
-							</div>
+					<div class="row">
+						<div class="col-md-6">
+							<h2>Contacts:</h2>
+							<h3>Instagram:</h3>
+							<input type="text" name="inst"
+								value="{% if user.hobby != None %}{{ user.inst }}{% endif %}">
+							<h3>Telegram:</h3>
+							<input type="text" name="telegram"
+								value="{% if user.hobby != None %}{{ user.telegram }}{% endif %}">
+							<h3>X:</h3>
+							<input type="text" name="x_network"
+								value="{% if user.hobby != None %}{{ user.x_network }}{% endif %}">
 						</div>
+					</div>
 					{% endif %}
 				</div>
 				<div class="col-md-6">
 					{% for image in images %}
-							<img src="{{ image.url }}" alt="alt" style="width: 300px; padding: 10px;">
+					<img src="{{ image.url }}" alt="alt" style="width: 300px; padding: 10px;">
 					{% endfor %}
 				</div>
 			</div>
-			</div>
-		</div>
+			<br>
+			<button class="btn btn-primary" id="next_button" type="submit">Keep changes</button>
+		</form>
+	</div>
+	</div>
 	{% endif %}
 </body>
 <script>
-	document.addEventListener('DOMContentLoaded', function() {
-		document.querySelector('.btn').addEventListener('click', function() {
-            window.location.href = '/profile';
+	document.addEventListener('DOMContentLoaded', function () {
+		document.getElementById('back_button').addEventListener('click', function () {
+			window.location.href = '/profile';
+		});
+	});
+
+	document.addEventListener('DOMContentLoaded', function () {
+		document.getElementById('next_button').addEventListener('click', function () {
+
 		});
 	});
 </script>
+
 </html>

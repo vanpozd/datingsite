@@ -27,32 +27,40 @@ Register
     <h2>Registration</h2>
     <form method="post" action="#">
         {% csrf_token %}
-        <div class="col-md-6">
-            <!-- First Name -->
-            <div class="form-group">
-                <label for="first_name">First Name</label>
-                <input type="text" class="form-control" id="first_name" name="first_name" maxlength="30" required>
-            </div>
+        <div class="row">
+            <div class="col-md-6">
+                <!-- First Name -->
+                <div class="form-group">
+                    <label for="first_name">First Name<span style="color: red;">*</span></label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" maxlength="30" required>
+                </div>
+                
+                <!-- Age -->
+                <div class="form-group">
+                    <label for="age">Age<span style="color: red;">*</span></label>
+                    <input type="number" class="form-control" id="age" name="age" required>
+                </div>
 
-            <!-- Last Name -->
-            <div class="form-group">
-                <label for="last_name">Last Name</label>
-                <input type="text" class="form-control" id="last_name" name="last_name" maxlength="30" required>
-            </div>
+                <!-- Sex -->
+                <div class="form-group">
+                    <label for="sex">Sex<span style="color: red;">*</span></label>
+                    <select class="form-control" id="sex" name="sex" required>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
 
-            <!-- Age -->
-            <div class="form-group">
-                <label for="age">Age</label>
-                <input type="number" class="form-control" id="age" name="age" required>
-            </div>
+                <!-- Last Name -->
+                <div class="form-group">
+                    <label for="last_name">Last Name</label>
+                    <input type="text" class="form-control" id="last_name" name="last_name" maxlength="30" required>
+                </div>
 
-            <!-- Sex -->
-            <div class="form-group">
-                <label for="sex">Sex</label>
-                <select class="form-control" id="sex" name="sex" required>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                </select>
+                <!-- Telegram -->
+                <div class="form-group">
+                    <label for="telegram">Telegram</label>
+                    <input type="text" class="form-control" id="telegram" name="telegram" maxlength="100">
+                </div>
             </div>
             <div class="col-md-6">
                 <!-- Description -->
@@ -82,12 +90,6 @@ Register
                     <input type="text" class="form-control" id="inst" name="inst" maxlength="100">
                 </div>
 
-                <!-- Telegram -->
-                <div class="form-group">
-                    <label for="telegram">Telegram</label>
-                    <input type="text" class="form-control" id="telegram" name="telegram" maxlength="100">
-                </div>
-
                 <!-- X Network -->
                 <div class="form-group">
                     <label for="x_network">X Network</label>
@@ -95,21 +97,9 @@ Register
                 </div>
             </div>
         </div>
-
-
-
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary btn-block">Submit</button>
-    </form>
-
-    <!-- <form method="post" id="register_form">
-        {% csrf_token %}
-        {{ form.as_p }}
-        
-        <div class="form-group">
-            <input type="submit" value="Continue" id="register_button" onclick="checkFormData(event)">
-        </div>
-    </form> -->
+    </form>]
 </div>
 
 <script>
