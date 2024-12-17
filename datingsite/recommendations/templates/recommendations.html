@@ -14,7 +14,7 @@
 		justify-content: center;
 		border: 1px solid black;
 		width: 600px;
-		height: 800px;
+		height: 900px;
 		margin: auto;
 	}
 	.user_images {
@@ -83,11 +83,11 @@
     </div>
 	<div class="recommendation_cont">
 		<div class="user_images">
-			<!-- User images here -->
-		<div class="photo_navigation">
-			<button type="button" class="btn btn-secondary" onclick="navigate_photos('prev')">Previous</button>
-			<button type="button" class="btn btn-secondary" onclick="navigate_photos('next')">Next</button>
-		</div>
+			<img src="{{ images.0 }}" alt="User photo" style="width: 596px;">
+			<div class="photo_navigation">
+				<button type="button" class="btn btn-secondary" onclick="navigate_photos('prev')">Previous</button>
+				<button type="button" class="btn btn-secondary" onclick="navigate_photos('next')">Next</button>
+			</div>
 		</div>
 		<div class="user_name_age_desc">
 			<div class="user_name_age">        
@@ -110,44 +110,59 @@
 	</div>
 </body>
 <script>
-	document.addEventListener('DOMContentLoaded', function() {
-		const like_button = document.querySelector('.btn-success');
-		const report_button = document.querySelector('.btn-primary');
-		const dislike_button = document.querySelector('.btn-danger');
+    let currentPhotoIndex = 0;
+    // let images = JSON.parse('{{ images|escapejs }}');
 
-	});
-
-function getCSRFToken() {
-    return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-}
-
-function handle_action(type, user_id) {
-    fetch('/handle_action/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}',
-        },
-        body: JSON.stringify({
-            type: type,
-            user_id: user_id
-        })
-    })
-    .then(response => response.json())
-    .then(result => {
-        console.log(result);
-        if (result.user_id) {
-            // Update the user block with the new user data
-            document.querySelector('.user_name').innerText = result.user_first_name + ' ' + result.user_last_name;
-            document.querySelector('.user_age').innerText = result.user_age;
-            document.querySelector('.user_desc').innerText = result.user_desc;
-            document.querySelector('.btn-success').setAttribute('onclick', `handle_action('like', ${result.user_id})`);
-            document.querySelector('.btn-primary').setAttribute('onclick', `handle_action('report', ${result.user_id})`);
-            document.querySelector('.btn-danger').setAttribute('onclick', `handle_action('dislike', ${result.user_id})`);
-        } else {
-            alert(result.message);
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        const like_button = document.querySelector('.btn-success');
+        const report_button = document.querySelector('.btn-primary');
+        const dislike_button = document.querySelector('.btn-danger');
     });
-}
+
+    function getCSRFToken() {
+        return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    }
+
+    function handle_action(type, user_id) {
+        fetch('/handle_action/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }},'
+            },
+            body: JSON.stringify({
+                type: type,
+                user_id: user_id
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            console.log(result);
+            if (result.user_id) {
+                // Update the user block with the new user data
+                document.querySelector('.user_name').innerText = result.user_first_name + ' ' + result.user_last_name;
+                document.querySelector('.user_age').innerText = result.user_age;
+                document.querySelector('.user_desc').innerText = result.user_desc;
+                document.querySelector('.btn-success').setAttribute('onclick', `handle_action('like', ${result.user_id})`);
+                document.querySelector('.btn-primary').setAttribute('onclick', `handle_action('report', ${result.user_id})`);
+                document.querySelector('.btn-danger').setAttribute('onclick', `handle_action('dislike', ${result.user_id})`);
+                // Update images
+                images = result.images;
+                currentPhotoIndex = 0;
+                document.querySelector('.user_images img').src = images[currentPhotoIndex];
+            } else {
+                alert(result.message);
+            }
+        });
+    }
+
+    function navigate_photos(direction) {
+        if (direction === 'prev') {
+            currentPhotoIndex = (currentPhotoIndex - 1 + images.length) % images.length;
+        } else if (direction === 'next') {
+            currentPhotoIndex = (currentPhotoIndex + 1) % images.length;
+        }
+        document.querySelector('.user_images img').src = images[currentPhotoIndex];
+    }
 </script>
 </html>
