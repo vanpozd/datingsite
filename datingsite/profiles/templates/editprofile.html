@@ -7,7 +7,45 @@
 	<title>Edit profile</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 </head>
+<style>
+		.image-container {
+			position: relative;
+			display: inline-block;
+        }
 
+        .del-btn-round {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+        }
+
+		.del-btn-round:hover {
+			background-color: red;
+		}
+
+		.chng-btn-round {
+			border-radius: 50%;
+			width: 40px;
+			height: 40px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			position: absolute;
+			bottom: 15px;
+			right:60px;
+    	}
+
+		.chng-btn-round:hover {
+			background-color: blue;
+		}
+
+</style>
 <body>
 	{% load static %}
 	{% include 'navbar.html' %}
@@ -22,7 +60,7 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-10"></div>
-			<div class="col-md-2"><button class="btn btn-primary" id="back_button">Back</button></div>
+			<div class="col-md-2"><a class="btn btn-primary" href="/profile">Back</a></div>
 		</div>
 		<form action="/profile/edit/" method="post">
 			{% csrf_token %}
@@ -86,9 +124,15 @@
 					</div>
 				</div>
 				<div class="col-md-6">
-					{% for image in images %}
-					<img src="{{ image.url }}" alt="alt" style="width: 300px; padding: 10px;">
-					{% endfor %}
+                    {% for image in images %}
+                    <div class="image-container">
+                        <img src="{{ image.url }}" alt="alt" style="width: 300px; padding: 10px;">
+                        <!-- <button class="btn btn-primary chng-btn-round" type="button">X</button>             -->
+						<label for="photoInput" class="btn btn-primary chng-btn-round" onclick="handleFileSelect(event, {{forloop.counter}})">X</label>
+						<input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event, {{forloop.counter}})">
+                        <a class="btn btn-danger del-btn-round" type="button" href="/profile/delete_image/{{ forloop.counter }}">X</a>
+                    </div>
+                    {% endfor %}
 				</div>
 			</div>
 			<br>
@@ -99,17 +143,28 @@
 	{% endif %}
 </body>
 <script>
-	document.addEventListener('DOMContentLoaded', function () {
-		document.getElementById('back_button').addEventListener('click', function () {
-			window.location.href = '/profile';
-		});
-	});
 
-	document.addEventListener('DOMContentLoaded', function () {
-		document.getElementById('next_button').addEventListener('click', function () {
+	function handleFileSelect(event, image_counter) {
+		const file = event.target.files[0]; 
+		if (file) {
+			fetch('/profile/upload_image/', {
+				method: 'POST',
+				headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+				body: JSON.stringify({
+					image_counter: image_counter,
+					image: file
+                })
+			})
+			.then(response => response.json())
+			.then(data => {
+				window.location.reload();
+			});
+		}
+	}
 
-		});
-	});
 </script>
 
 </html>

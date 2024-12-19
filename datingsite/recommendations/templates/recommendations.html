@@ -85,6 +85,23 @@
 
 <body>
     {% include 'navbar.html' %}
+    {% load static %}
+	<div class="{% if form.errors %}alert alert-danger{% else %}alert alert-success{% endif %} page_wrapper">
+		{% block messages%}
+			{% if messages %}
+				{% for message in messages %}
+					{{ message }}
+				{% endfor %}
+			{% endif %}
+			{% if not messages %}
+				<style>
+					.page_wrapper {
+						display: none;
+					}
+				</style>
+			{% endif %}
+		{% endblock %}
+    </div>
     <div class="container mt-4">
         <!-- Фото пользователя -->
         <div id="image-container" class="text-center mb-4">
