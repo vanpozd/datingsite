@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 	'authentication',
 	'recommendations',
 	'profiles',
+    'chat',
 ]
 
 AUTH_USER_MODEL = 'authentication.CustomUser'

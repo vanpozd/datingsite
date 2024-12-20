@@ -104,10 +104,12 @@
     </div>
     <div class="container mt-4">
         <!-- Фото пользователя -->
+        <div class="ms-3" style="display: {% if like_flg == True %} block {% else %} none; {% endif %}" id="heart-icon">
+            <span class="heart-icon" style="font-size: 36px; color: red;">♥<span style="font-size: 24px;">This person liked you!</span></span>
+        </div>
         <div id="image-container" class="text-center mb-4">
             <img id="user_images" src="{{ images.0 }}" alt="User photo">
         </div>
-
 		<div class="button-row">
             <button type="button" class="btn btn-secondary" onclick="navigate_photos('prev')">Previous</button>
             <button type="button" class="btn btn-secondary" onclick="navigate_photos('next')">Next</button>
@@ -134,10 +136,10 @@
             
 			<div class="row">
                 <div class="col-md-6">
-                    <p><strong>Hobby:</strong> {{ rec_user.hobby }}</p>
+                    <div><strong>Hobby: </strong><span id="user_hobby">{{ rec_user.hobby }}</span></div>
                 </div>
                 <div class="col-md-6">
-                    <p><strong>Main Goal:</strong> {{ rec_user.main_goal }}</p>
+                    <p><strong>Main Goal: </strong><span id="user_main_goal">{{ rec_user.main_goal }}</span></p>
                 </div>
             </div>
             <hr>
@@ -163,6 +165,19 @@
         let currentPhotoIndex = 0;
         let images = {{ images|safe }};  // Изначальный список фотографий
 
+        document.addEventListener("DOMContentLoaded", function () {
+        const heartContainer = document.getElementById("heart-container");
+        const tooltip = document.getElementById("tooltip");
+
+        heartContainer.addEventListener("mouseover", function () {
+            tooltip.style.display = "block";
+        });
+
+        heartContainer.addEventListener("mouseout", function () {
+            tooltip.style.display = "none";
+        });
+    });
+
         function handle_action(type, user_id) {
             fetch('/handle_action/', {
                 method: 'POST',
@@ -172,7 +187,8 @@
                 },
                 body: JSON.stringify({
                     type: type,
-                    user_id: user_id
+                    user_id: user_id,
+                    like_flg: '{{ like_flg }}'
                 })
             })
             .then(response => response.json())
@@ -182,6 +198,13 @@
                     document.getElementById('user_name').innerText = result.user_first_name + ' ' + result.user_last_name + ', ' + result.user_age;
                     document.getElementById('user_sex').innerText = result.user_sex;
                     document.getElementById('user_desc').innerText = result.user_desc;
+                    document.getElementById('user_hobby').innerText = result.user_hobby;
+                    document.getElementById('user_main_goal').innerText = result.user_main_goal;
+                    if (result.like_flg) {
+                        document.getElementById('heart-icon').style.display = 'block';
+                    } else {
+                        document.getElementById('heart-icon').style.display = 'none';
+                    }
 
                     // Обновляем кнопки действий с новым user_id
                     document.querySelector('.btn-success').setAttribute('onclick', `handle_action('like', ${result.user_id})`);

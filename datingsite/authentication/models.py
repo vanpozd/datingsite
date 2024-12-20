@@ -1,6 +1,7 @@
 from django.db import models
 
 import datetime
+import json
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
@@ -35,32 +36,36 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser):
-
-    first_name = models.CharField(max_length=20, default=None, null=True)
-    last_name = models.CharField(max_length=20, default=None, blank=True)
-    age = models.IntegerField(default=None, null=True)
-    sex = models.CharField(max_length=10, default=None, null=True)
-    main_goal = models.CharField(max_length=100, default=None, null=True)
-    description = models.TextField(default=None, null=True)
-    inst = models.CharField(max_length=100, default=None, null=True)
-    telegram = models.CharField(max_length=100, default=None, null=True)
-    x_network = models.CharField(max_length=100, default=None, null=True)
-    hobby = models.CharField(max_length=100, default=None, null=True)
-    username = models.CharField(max_length=100, unique=True, default=None, null=False)
-    password = models.CharField(default=None, max_length=255, null=False)
-    created_at = models.DateTimeField(editable=False, auto_now=datetime.datetime.now())
-    updated_at = models.DateTimeField(auto_now=datetime.datetime.now())
-    photo1 = models.ImageField(upload_to='images/', default=None, null=True)
-    photo2 = models.ImageField(upload_to='images/', default=None, null=True)
-    photo3 = models.ImageField(upload_to='images/', default=None, null=True)
-    photo4 = models.ImageField(upload_to='images/', default=None, null=True)
-    photo5 = models.ImageField(upload_to='images/', default=None, null=True)
-    photo6 = models.ImageField(upload_to='images/', default=None, null=True)
+    first_name = models.CharField(max_length=20, default='', blank=False)
+    last_name = models.CharField(max_length=20, default='', blank=True)
+    age = models.IntegerField(default=0, blank=False)
+    sex = models.CharField(max_length=10, default='', blank=False)
+    main_goal = models.CharField(max_length=100, default='', blank=True)
+    description = models.TextField(default='', blank=True, null=True)
+    inst = models.CharField(max_length=100, default='', blank=True)
+    telegram = models.CharField(max_length=100, default='', blank=True)
+    x_network = models.CharField(max_length=100, default='', blank=True)
+    hobby = models.CharField(max_length=100, default='', blank=True)
+    username = models.CharField(max_length=100, unique=True, default='', blank=False)
+    password = models.CharField(max_length=255, blank=False)
+    created_at = models.DateTimeField(editable=False, auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    photo1 = models.ImageField(upload_to='images/', default=None, blank=False, null=False)
+    photo2 = models.ImageField(upload_to='images/', default=None, blank=True, null=True)
+    photo3 = models.ImageField(upload_to='images/', default=None, blank=True, null=True)
+    photo4 = models.ImageField(upload_to='images/', default=None, blank=True, null=True)
+    photo5 = models.ImageField(upload_to='images/', default=None, blank=True, null=True)
+    photo6 = models.ImageField(upload_to='images/', default=None, blank=True, null=True)
+    liked_profiles = models.TextField(blank=True, default='')
+    reported = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     role = models.IntegerField(choices=ROLE_CHOICES, default=0)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     id = models.AutoField(primary_key=True)
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['first_name', 'age', 'sex']
 
     USERNAME_FIELD = 'username'
     objects = CustomUserManager()
@@ -131,6 +136,38 @@ class CustomUser(AbstractBaseUser):
         if is_active != None:
             user_to_update.is_active = is_active
         user_to_update.save()
+
+    def set_liked_profiles(self, numbers):
+        self.liked_profiles = numbers
+        self.save()
+
+    def add_number_to_liked_profiles(self, number):
+        like_user = CustomUser.objects.filter(id=number).first()
+        liked_list = like_user.get_liked_profiles()
+        if liked_list is None:
+            liked_list = []
+        try:
+            liked_list.index(self.id)
+            return True
+        except:
+            liked_list.append(self.id)
+            like_user.liked_profiles = liked_list
+            like_user.save()
+            return False
+
+    def get_liked_profiles(self):
+        liked_list_str = self.liked_profiles
+        if liked_list_str is not None:
+            liked_list_str = self.liked_profiles[1:-1]
+            liked_list = liked_list_str.split(",")
+            for i in range(len(liked_list)):
+                liked_list[i] = int(liked_list[i])
+            return liked_list
+        return None
+    
+    def report(self):
+        self.reported = True
+        self.save()
 
     @staticmethod
     def get_all():
