@@ -25,6 +25,7 @@ Register
 {% block content %}
 <div class="login-container">
     <h2>Registration</h2>
+    <p class="text-muted">You can change or delete data in settings later.</p>
     <form method="post" action="#">
         {% csrf_token %}
         <div class="row">
@@ -58,7 +59,7 @@ Register
 
                 <!-- Telegram -->
                 <div class="form-group">
-                    <label for="telegram">Telegram</label>
+                    <label for="telegram">Telegram tag</label>
                     <input type="text" class="form-control" id="telegram" name="telegram" maxlength="100">
                 </div>
             </div>
@@ -86,13 +87,13 @@ Register
 
                 <!-- Instagram -->
                 <div class="form-group">
-                    <label for="inst">Instagram</label>
+                    <label for="inst">Instagram tag</label>
                     <input type="text" class="form-control" id="inst" name="inst" maxlength="100">
                 </div>
 
                 <!-- X Network -->
                 <div class="form-group">
-                    <label for="x_network">X Network</label>
+                    <label for="x_network">X Network tag</label>
                     <input type="text" class="form-control" id="x_network" name="x_network" maxlength="100">
                 </div>
             </div>
@@ -101,22 +102,4 @@ Register
         <button type="submit" class="btn btn-primary btn-block">Submit</button>
     </form>
 </div>
-
-<script>
-    function checkFormData(event) {
-        let form = document.getElementById('register_form');
-        let inputs = form.getElementsByTagName('input');
-        let empty = false;
-        for (let i = 0; i < inputs.length; i++) {
-            if (inputs[i].value === '') {
-                empty = true;
-                break;
-            }
-        }
-        if (empty) {
-            event.preventDefault();
-            alert('Please fill in all the fields');
-        }
-    }
-</script>
 {% endblock %}

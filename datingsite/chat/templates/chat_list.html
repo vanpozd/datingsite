@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <title>Chat List</title>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <h1>Your Chats</h1>
+    <ul>
+        {% for item in chats %}
+            <li>
+                <a href="{{ item.id }}/">Chat with {{ item.user2.first_name }} {{ item.user2.last_name }}</a>
+            </li>
+        {% endfor %}
+    </ul>    
+</body>
+</html>

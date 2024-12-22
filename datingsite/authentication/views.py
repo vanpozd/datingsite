@@ -139,6 +139,7 @@ def user_register3(request):
     if not user_id:
         return redirect('register1')
     user = CustomUser.objects.get(id=user_id)
+    user.liked_profiles = None
     if request.method == "POST":
         form = forms.UserPhotoForm(request.POST, request.FILES)
         if form.is_valid():

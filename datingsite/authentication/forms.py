@@ -62,6 +62,7 @@ class UserNameForm(forms.ModelForm):
         user.inst = self.cleaned_data['inst']
         user.telegram = self.cleaned_data['telegram']
         user.x_network = self.cleaned_data['x_network']
+        user.liked_list = None
         
         if self.cleaned_data['age'] == None:
             raise forms.ValidationError("Age is required")

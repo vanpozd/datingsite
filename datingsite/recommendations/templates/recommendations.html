@@ -143,12 +143,12 @@
                 </div>
             </div>
             <hr>
-            <div class="social-links text-center">
+            <div class="social-links text-center" id="social_links" style="display: none;">
                 <h6>Connect with me:</h6>
                 <p>
-                    <a href="https://t.me/{{ rec_user.telegram }}" target="_blank" class="btn btn-outline-info btn-sm mx-1">Telegram</a>
-                    <a href="https://instagram.com/{{ rec_user.inst }}" target="_blank" class="btn btn-outline-danger btn-sm mx-1">Instagram</a>
-                    <a href="https://x.com/{{ rec_user.x_network }}" target="_blank" class="btn btn-outline-dark btn-sm mx-1">X</a>
+                    <a href="https://t.me/{{ rec_user.telegram }}" target="_blank" class="btn btn-outline-info btn-sm mx-1" id="tg_tag">Telegram</a>
+                    <a href="https://instagram.com/{{ rec_user.inst }}" target="_blank" class="btn btn-outline-danger btn-sm mx-1" id="inst_tag">Instagram</a>
+                    <a href="https://x.com/{{ rec_user.x_network }}" target="_blank" class="btn btn-outline-dark btn-sm mx-1" id="x_tag">X</a>
                 </p>
             </div>
         </div>
@@ -164,8 +164,10 @@
     <script>
         let currentPhotoIndex = 0;
         let images = {{ images|safe }};  // Изначальный список фотографий
+        let like_flg = true;
 
         document.addEventListener("DOMContentLoaded", function () {
+        let like_flg = {{ like_flg|safe }};
         const heartContainer = document.getElementById("heart-container");
         const tooltip = document.getElementById("tooltip");
 
@@ -188,31 +190,54 @@
                 body: JSON.stringify({
                     type: type,
                     user_id: user_id,
-                    like_flg: '{{ like_flg }}'
+                    like_flg: like_flg,
                 })
             })
             .then(response => response.json())
             .then(result => {
                 if (result.user_id) {
-                    // Обновляем данные пользователя
                     document.getElementById('user_name').innerText = result.user_first_name + ' ' + result.user_last_name + ', ' + result.user_age;
                     document.getElementById('user_sex').innerText = result.user_sex;
                     document.getElementById('user_desc').innerText = result.user_desc;
                     document.getElementById('user_hobby').innerText = result.user_hobby;
                     document.getElementById('user_main_goal').innerText = result.user_main_goal;
-                    if (result.like_flg) {
+                    like_flg = result.like_flg;
+                    if (like_flg) {
                         document.getElementById('heart-icon').style.display = 'block';
                     } else {
                         document.getElementById('heart-icon').style.display = 'none';
                     }
 
-                    // Обновляем кнопки действий с новым user_id
                     document.querySelector('.btn-success').setAttribute('onclick', `handle_action('like', ${result.user_id})`);
                     document.querySelector('.btn-primary').setAttribute('onclick', `handle_action('report', ${result.user_id})`);
                     document.querySelector('.btn-danger').setAttribute('onclick', `handle_action('dislike', ${result.user_id})`);
-
-                    // Обновляем изображения и сбрасываем индекс
-                    images = result.images; // Новые фотографии
+                    if (result.user_tg && result.user_tg.trim() !== '' && 
+                    result.user_inst && result.user_inst.trim() !== '' && 
+                    result.user_x && result.user_x.trim() !== '') {
+                        document.getElementById('social_links').style.display = 'block';
+                    } else {
+                        if (result.user_tg && result.user_tg.trim() !== '') {
+                            console.log(result.user_tg);
+                            document.getElementById('tg_tag').href = 'https://t.me/' + result.user_tg;
+                            document.getElementById('tg_tag').style.display = 'block';
+                        } else {
+                            document.getElementById('tg_tag').style.display = 'none';
+                        }
+                        if (result.user_inst && result.user_inst.trim() !== '') {
+                            document.getElementById('inst_tag').href = 'https://instagram.com/' + result.user_inst;
+                            document.getElementById('inst_tag').style.display = 'block';
+                        } else {
+                            document.getElementById('inst_tag').style.display = 'none';
+                        }
+                        if (result.user_x && result.user_x.trim() !== '') {
+                            document.getElementById('x_tag').href = 'https://x.com/' + result.user_x;
+                            document.getElementById('x_tag').style.display = 'block';
+                        } else {
+                            document.getElementById('x_tag').style.display = 'none';
+                        }
+                    }
+                    
+                    images = result.images;
                     currentPhotoIndex = 0;
                     document.getElementById('user_images').src = images[0];
                 } else {

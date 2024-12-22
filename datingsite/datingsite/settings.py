@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 	'authentication',
 	'recommendations',
-	'profiles',
     'chat',
+	'profiles',
 ]
 
 AUTH_USER_MODEL = 'authentication.CustomUser'

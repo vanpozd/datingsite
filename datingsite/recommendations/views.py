@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from authentication.models import CustomUser
+from chat.models import Chat
 import json
 
 def get_liked_profile_id(request):
@@ -18,15 +19,14 @@ def get_liked_profile_id(request):
     return None
 
 def recom(request):
-    like_flg = False
-    liked_user = get_liked_profile_id(request)
-    if liked_user is None:
-        liked_user = CustomUser.objects.exclude(id=request.user.id).filter(age__gte=request.user.age-2, age__lte=request.user.age+2).first()
-    else:
-        liked_user = CustomUser.objects.get(id=liked_user)
-        like_flg = True 
-
     if request.user.is_authenticated:
+        like_flg = False
+        liked_user = get_liked_profile_id(request)
+        if liked_user is None:
+            liked_user = CustomUser.objects.exclude(id=request.user.id).filter(age__gte=request.user.age-2, age__lte=request.user.age+2).first()
+        else:
+            liked_user = CustomUser.objects.get(id=liked_user)
+            like_flg = True 
         images = [photo.url for photo in [liked_user.photo1, liked_user.photo2, liked_user.photo3, liked_user.photo4, liked_user.photo5, liked_user.photo6] if photo]
         return render(request, 'recommendations.html', {'rec_user': liked_user, 'images': images, 'like_flg': like_flg})
     else:
@@ -39,15 +39,18 @@ def handle_action(request):
         data = json.loads(request.body)
         action = data.get('type')
         user_id = data.get('user_id')
-        test_flg = data.get('like_flg')
-        print(test_flg)
-        if test_flg:
-            pass # start chat here
+        already_liked_flg = data.get('like_flg')
 
         request.user.get_liked_profiles()
-        
         if action == 'like':
-            request.user.add_number_to_liked_profiles(user_id)
+            if already_liked_flg:
+                try:
+                    newchat = Chat.objects.create(user1=request.user, user2=CustomUser.objects.get(id=user_id))
+                    newchat.save()
+                except:
+                    pass
+            else:
+                request.user.add_number_to_liked_profiles(user_id)
         elif action == 'dislike':
             pass
         elif action == 'report':
@@ -58,11 +61,11 @@ def handle_action(request):
         user = request.user
         liked_user_id = get_liked_profile_id(request)
         if liked_user_id is not None:
+            print("liked_user_id is not None")
             like_flg = True 
             next_user = CustomUser.objects.get(id=liked_user_id)
         else:
             next_user = CustomUser.objects.exclude(id=request.user.id).filter(age__gte=user.age-2, age__lte=user.age+2, id__gt=user_id).first()    
-        
         if not next_user:
             next_user = CustomUser.objects.exclude(id=request.user.id).filter(age__gte=user.age-2, age__lte=user.age+2).first()
   
@@ -76,6 +79,9 @@ def handle_action(request):
             'user_sex': next_user.sex,
             'user_hobby': next_user.hobby,
             'user_main_goal': next_user.main_goal,
+            'user_tg': next_user.telegram,
+            'user_inst': next_user.inst,
+            'user_x': next_user.x_network,
             'user_id': next_user.id,
             'like_flg': like_flg,
             'images': images
