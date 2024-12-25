@@ -2,21 +2,97 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <title>Chat</title>    
+    <title>Chat</title>
+    <style>
+        #chat-container {
+            max-height: 500px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .message .sender {
+            font-weight: bold;
+        }
+        .message.sent {
+            text-align: right;
+        }
+        .message.sent .sender {
+            color: #007bff;
+        }
+        .message.received .sender {
+            color: #28a745;
+        }
+        .form-container {
+            margin-top: 20px;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-light">
     {% include 'navbar.html' %}
-    <h1>Chat</h1>
-    <div id="messages">
-        {% for message in messages %}
-            <p><strong>{{ message.sender.username }}:</strong> {{ message.content }}</p>
-        {% endfor %}
+
+    <div class="container mt-5">
+        <div class="text-center mb-4">
+            <h1 class="display-4 text-primary">Chat</h1>
+            <p class="lead text-muted">
+                Chatting with 
+                {% if chat.user1 == request.user %}
+                    {{ chat.user2.first_name }} {{ chat.user2.last_name }}
+                {% else %}
+                    {{ chat.user1.first_name }} {{ chat.user1.last_name }}
+                {% endif %}
+            </p>
+        </div>
+
+        <div id="chat-container">
+            {% for message in messages %}
+                <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+                    <p class="sender">
+                        {% if message.sender == request.user %}
+                            You
+                        {% else %}
+                            {{ message.sender.first_name }} {{ message.sender.last_name }}
+                        {% endif %}
+                    </p>
+                    <p>{{ message.content }}</p>
+                    <small class="text-muted">{{ message.timestamp|date:"H:i, M d, Y" }}</small>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-container">
+            <form id="chat-form" action="send/" method="POST" class="form-inline">
+                {% csrf_token %}
+                <textarea id="message-input" name="content" rows="3" class="form-control w-75 mr-2" placeholder="Type your message here..."></textarea>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+        </div>
     </div>
-    <form action="send/" method="POST">
-        {% csrf_token %}
-        <textarea name="content" rows="3"></textarea>
-        <button type="submit">Send</button>
-    </form>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script>
+        // Auto-scroll to the bottom of the chat container
+        const chatContainer = document.getElementById('chat-container');
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        // Handle Enter key for sending messages
+        const messageInput = document.getElementById('message-input');
+        const chatForm = document.getElementById('chat-form');
+
+        messageInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                chatForm.submit();
+            }
+        });
+    </script>
 </body>
 </html>

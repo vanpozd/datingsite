@@ -2,18 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <title>Chat List</title>
 </head>
-<body>
+<body class="bg-light">
     {% include 'navbar.html' %}
-    <h1>Your Chats</h1>
-    <ul>
-        {% for item in chats %}
-            <li>
-                <a href="{{ item.id }}/">Chat with {{ item.user2.first_name }} {{ item.user2.last_name }}</a>
-            </li>
-        {% endfor %}
-    </ul>    
+
+    <div class="container mt-5">
+        <div class="text-center mb-4">
+            <h1 class="display-4 text-primary">Your Chats</h1>
+            <p class="lead text-muted">Select a chat to continue the conversation</p>
+        </div>
+
+        {% if chats %}
+            <div class="row">
+                {% for item in chats %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    Chat with 
+                                    {% if item.user1 == request.user %}
+                                        {{ item.user2.first_name }} {{ item.user2.last_name }}
+                                    {% else %}
+                                        {{ item.user1.first_name }} {{ item.user1.last_name }}
+                                    {% endif %}
+                                </h5>
+                                <p class="card-text text-muted">Started on: {{ item.created_at|date:"M d, Y" }}</p>
+                                <a href="{{ item.id }}/" class="btn btn-primary btn-block">Open Chat</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center">
+                <p class="text-muted">No chats available. Start a new conversation!</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
 </html>

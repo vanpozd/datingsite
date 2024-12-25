@@ -4,167 +4,142 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Edit profile</title>
+	<title>Edit Profile</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-</head>
-<style>
+	<style>
+		.image-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+			gap: 20px;
+		}
+
 		.image-container {
 			position: relative;
+			border: 1px solid #ddd;
+			border-radius: 8px;
+			padding: 10px;
+			text-align: center;
+			background: #f8f9fa;
+		}
+
+		.image-container img {
+			max-width: 100%;
+			max-height: 150px;
+			object-fit: cover;
+			border-radius: 5px;
+		}
+
+		.image-buttons {
+			margin-top: 10px;
+		}
+
+		.chng-btn,
+		.del-btn {
 			display: inline-block;
-        }
-
-        .del-btn-round {
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-        }
-
-		.del-btn-round:hover {
-			background-color: red;
+			width: 100%;
+			margin-bottom: 5px;
 		}
+	</style>
+</head>
 
-		.chng-btn-round {
-			border-radius: 50%;
-			width: 40px;
-			height: 40px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			position: absolute;
-			bottom: 15px;
-			right:60px;
-    	}
-
-		.chng-btn-round:hover {
-			background-color: blue;
-		}
-
-</style>
 <body>
 	{% load static %}
 	{% include 'navbar.html' %}
-	{% block messages%}
-	{% if messages %}
-	{% for message in messages %}
-	{{ message }}
-	{% endfor %}
-	{% endif %}
-	{% endblock %}
-	{% if user %}
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-md-10"></div>
-			<div class="col-md-2"><a class="btn btn-primary" href="/profile">Back</a></div>
+
+	<div class="container mt-5">
+		<div class="row mb-4">
+			<div class="col-12 text-right">
+				<a href="/profile" class="btn btn-secondary">Back</a>
+			</div>
 		</div>
-		<form action="/profile/edit/" method="post">
+
+		<form action="/profile/edit/" method="post" enctype="multipart/form-data">
 			{% csrf_token %}
 			<div class="row">
 				<div class="col-md-6">
-					<div class="row">
-						<div class="col-md-8">
-							<h2>Name:</h2>
-							<input type="text" name="first_name" value="{{ user.first_name }}"><input type="text"
-								name="last_name" value="{{ user.last_name }}">
-							<div class="row">
-								<div class="col-md-6">
-									<br>
-									<select class="form-control" id="sex" name="sex" required>
-										<option value="male">Male</option>
-										<option value="female">Female</option>
-									</select>
-								</div>
+					<h2 class="mb-3">Profile Information</h2>
+					<div class="form-group">
+						<label for="first_name">First Name</label>
+						<input type="text" id="first_name" name="first_name" class="form-control" value="{{ user.first_name }}" required>
+					</div>
+					<div class="form-group">
+						<label for="last_name">Last Name</label>
+						<input type="text" id="last_name" name="last_name" class="form-control" value="{{ user.last_name }}" required>
+					</div>
+					<div class="form-group">
+						<label for="age">Age</label>
+						<input type="number" id="age" name="age" class="form-control" value="{{ user.age }}" required>
+					</div>
+					<div class="form-group">
+						<label for="sex">Gender</label>
+						<select id="sex" name="sex" class="form-control" required>
+							<option value="male" {% if user.sex == "male" %}selected{% endif %}>Male</option>
+							<option value="female" {% if user.sex == "female" %}selected{% endif %}>Female</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="description">Description</label>
+						<textarea id="description" name="description" class="form-control">{{ user.description }}</textarea>
+					</div>
+					<div class="form-group">
+						<label for="hobby">Hobby</label>
+						<input type="text" id="hobby" name="hobby" class="form-control" value="{{ user.hobby }}">
+					</div>
+					<div class="form-group">
+						<label for="main_goal">Main Goal</label>
+						<select id="main_goal" name="main_goal" class="form-control" required>
+							<option value="dating" {% if user.main_goal == "dating" %}selected{% endif %}>Dating</option>
+							<option value="friendship" {% if user.main_goal == "friendship" %}selected{% endif %}>Friendship</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<h2>Contacts</h2>
+						<label for="instagram">Instagram</label>
+						<input type="text" id="instagram" name="inst" class="form-control" value="{{ user.inst }}">
+						<label for="telegram">Telegram</label>
+						<input type="text" id="telegram" name="telegram" class="form-control" value="{{ user.telegram }}">
+						<label for="x_network">X</label>
+						<input type="text" id="x_network" name="x_network" class="form-control" value="{{ user.x_network }}">
+					</div>
+				</div>
+
+				<div class="col-md-6">
+					<h2 class="mb-3">Profile Pictures</h2>
+					<div class="image-grid">
+						<!-- Existing images -->
+						{% for image in images %}
+						<div class="image-container">
+							<img src="{{ image.url }}" alt="Profile Image">
+							<div class="image-buttons">
+								<label for="photoInput{{ forloop.counter }}" class="btn btn-primary chng-btn">Change</label>
+								<input type="file" id="photoInput{{ forloop.counter }}" name="photo{{ forloop.counter }}" class="d-none">
+								<a href="/profile/delete_image/{{ forloop.counter }}" class="btn btn-danger del-btn">Delete</a>
 							</div>
 						</div>
-						<div class="col-md-1">
-							<h2>Age:</h2>
-							<input type="text" name="age" value="{{ user.age }}">
+						{% endfor %}
+					
+						<!-- Empty slots for new images -->
+						{% for i in remaining_slots %}
+						<div class="image-container">
+							<label for="photoInputNew{{ i }}" class="btn btn-primary">Upload</label>
+							<input type="file" id="photoInputNew{{ i }}" name="photo{{ i }}" class="d-none">
 						</div>
+						{% endfor %}
 					</div>
-					<div class="row">
-						<div class="col-md-6">
-							<h2>Description:</h2>
-							<textarea name="description" id="description_text" style="width: 300px;">{{ user.description }}</textarea>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-6">
-							<h2>Hobby</h2>
-							<input type="text" name="hobby"
-								value="{% if user.hobby != None %}{{ user.hobby }}{% endif %}">
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-6">
-							<h2>Main goal:</h2>
-							<select class="form-control" id="main_goal" name="main_goal" required>
-								<option value="dating">Dating</option>
-								<option value="friendship">Friendship</option>
-							</select>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-6">
-							<h2>Contacts:</h2>
-							<h3>Instagram:</h3>
-							<input type="text" name="inst"
-								value="{% if user.hobby != None %}{{ user.inst }}{% endif %}">
-							<h3>Telegram:</h3>
-							<input type="text" name="telegram"
-								value="{% if user.hobby != None %}{{ user.telegram }}{% endif %}">
-							<h3>X:</h3>
-							<input type="text" name="x_network"
-								value="{% if user.hobby != None %}{{ user.x_network }}{% endif %}">
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6">
-                    {% for image in images %}
-                    <div class="image-container">
-                        <img src="{{ image.url }}" alt="alt" style="width: 300px; padding: 10px;">
-                        <!-- <button class="btn btn-primary chng-btn-round" type="button">X</button>             -->
-						<label for="photoInput" class="btn btn-primary chng-btn-round" onclick="handleFileSelect(event, {{forloop.counter}})">X</label>
-						<input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event, {{forloop.counter}})">
-                        <a class="btn btn-danger del-btn-round" type="button" href="/profile/delete_image/{{ forloop.counter }}">X</a>
-                    </div>
-                    {% endfor %}
 				</div>
 			</div>
-			<br>
-			<button class="btn btn-primary" id="next_button" type="submit">Keep changes</button>
+
+			<div class="row mt-4">
+				<div class="col-12 text-right">
+					<button type="submit" class="btn btn-success">Save Changes</button>
+				</div>
+			</div>
 		</form>
 	</div>
-	</div>
-	{% endif %}
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
-<script>
-
-	function handleFileSelect(event, image_counter) {
-		const file = event.target.files[0]; 
-		if (file) {
-			fetch('/profile/upload_image/', {
-				method: 'POST',
-				headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}',
-                },
-				body: JSON.stringify({
-					image_counter: image_counter,
-					image: file
-                })
-			})
-			.then(response => response.json())
-			.then(data => {
-				window.location.reload();
-			});
-		}
-	}
-
-</script>
 
 </html>

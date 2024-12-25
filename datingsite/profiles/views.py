@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 import json
+from django.core.files.storage import FileSystemStorage
 
 def userprofile(request):
 	if request.user.is_authenticated:
@@ -9,28 +10,44 @@ def userprofile(request):
 		return render(request, 'userprofile.html', {'user': user, 'images': images})
 	else:
 		return redirect('login')
-	
+
 def editprofile(request):
-	if request.user.is_authenticated:
-		user = request.user
-		if request.method == 'POST':
-			user.first_name = request.POST['first_name']
-			user.last_name = request.POST['last_name']
-			user.description = request.POST['description']
-			user.age = request.POST['age']
-			user.sex = request.POST['sex']
-			user.hobby = request.POST['hobby']
-			user.main_goal = request.POST['main_goal']
-			user.inst = request.POST['inst']
-			user.telegram = request.POST['telegram']
-			user.x_network = request.POST['x_network']
-			user.save()
-			return redirect('profile')
-		else:
-			images = [photo for photo in [user.photo1, user.photo2, user.photo3, user.photo4, user.photo5, user.photo6] if photo]
-			return render(request, 'editprofile.html', {'user': user, 'images': images})
-	else:
-		return redirect('login')
+    if request.user.is_authenticated:
+        user = request.user
+        if request.method == 'POST':
+            # Обновление текстовой информации
+            user.first_name = request.POST['first_name']
+            user.last_name = request.POST['last_name']
+            user.description = request.POST['description']
+            user.age = request.POST['age']
+            user.sex = request.POST['sex']
+            user.hobby = request.POST['hobby']
+            user.main_goal = request.POST['main_goal']
+            user.inst = request.POST['inst']
+            user.telegram = request.POST['telegram']
+            user.x_network = request.POST['x_network']
+
+            # Обработка загруженных изображений
+            fs = FileSystemStorage(location='media/images')
+            for i in range(1, 7):
+                photo_field = f'photo{i}'
+                if photo_field in request.FILES:
+                    photo = request.FILES[photo_field]
+                    filename = fs.save(photo.name, photo)
+                    setattr(user, f'photo{i}', f'images/{filename}')
+
+            user.save()
+            return redirect('profile')
+        else:
+            # Сбор информации для отображения
+            images = [
+                {'url': photo.url, 'name': photo.name}
+                for photo in [user.photo1, user.photo2, user.photo3, user.photo4, user.photo5, user.photo6] if photo
+            ]
+            remaining_slots = list(range(1, 6 - len(images) + 1))  # Оставшиеся слоты
+            return render(request, 'editprofile.html', {'user': user, 'images': images, 'remaining_slots': remaining_slots})
+    else:
+        return redirect('login')
 	
 
 def delete_image(request, image_id):
