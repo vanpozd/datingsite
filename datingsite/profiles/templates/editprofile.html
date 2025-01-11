@@ -22,12 +22,13 @@
 			background: #f8f9fa;
 		}
 
-		.image-container img {
-			max-width: 100%;
-			max-height: 150px;
-			object-fit: cover;
-			border-radius: 5px;
-		}
+        .image-container img {
+            max-width: 100%;
+            max-height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
 
 		.image-buttons {
 			margin-top: 10px;
@@ -60,19 +61,19 @@
 					<h2 class="mb-3">Profile Information</h2>
 					<div class="form-group">
 						<label for="first_name">First Name</label>
-						<input type="text" id="first_name" name="first_name" class="form-control" value="{{ user.first_name }}" required>
+						<input type="text" id="first_name" name="first_name" class="form-control" value="{{ user.first_name }}">
 					</div>
 					<div class="form-group">
 						<label for="last_name">Last Name</label>
-						<input type="text" id="last_name" name="last_name" class="form-control" value="{{ user.last_name }}" required>
+						<input type="text" id="last_name" name="last_name" class="form-control" value="{{ user.last_name }}">
 					</div>
 					<div class="form-group">
 						<label for="age">Age</label>
-						<input type="number" id="age" name="age" class="form-control" value="{{ user.age }}" required>
+						<input type="number" id="age" name="age" class="form-control" value="{{ user.age }}">
 					</div>
 					<div class="form-group">
 						<label for="sex">Gender</label>
-						<select id="sex" name="sex" class="form-control" required>
+						<select id="sex" name="sex" class="form-control">
 							<option value="male" {% if user.sex == "male" %}selected{% endif %}>Male</option>
 							<option value="female" {% if user.sex == "female" %}selected{% endif %}>Female</option>
 						</select>
@@ -87,7 +88,7 @@
 					</div>
 					<div class="form-group">
 						<label for="main_goal">Main Goal</label>
-						<select id="main_goal" name="main_goal" class="form-control" required>
+						<select id="main_goal" name="main_goal" class="form-control">
 							<option value="dating" {% if user.main_goal == "dating" %}selected{% endif %}>Dating</option>
 							<option value="friendship" {% if user.main_goal == "friendship" %}selected{% endif %}>Friendship</option>
 						</select>
@@ -121,8 +122,9 @@
 						<!-- Empty slots for new images -->
 						{% for i in remaining_slots %}
 						<div class="image-container">
+							<img id="preview-{{ i }}" src="https://via.placeholder.com/150" alt="Profile Image">
 							<label for="photoInputNew{{ i }}" class="btn btn-primary">Upload</label>
-							<input type="file" id="photoInputNew{{ i }}" name="photo{{ i }}" class="d-none">
+							<input type="file" id="photoInputNew{{ i }}" name="photo{{ i }}" class="d-none" accept="image/*" onchange="showPreview(event, {{ i }})">
 						</div>
 						{% endfor %}
 					</div>
@@ -136,7 +138,19 @@
 			</div>
 		</form>
 	</div>
-
+	<script>
+        function showPreview(event, index) {
+            const input = event.target;
+            const preview = document.getElementById(`preview-${index}`);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result; // Set the image source to the uploaded file
+                }
+                reader.readAsDataURL(input.files[0]); // Read the uploaded file
+            }
+        }
+    </script>
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>

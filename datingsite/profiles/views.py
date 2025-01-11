@@ -26,6 +26,7 @@ def editprofile(request):
             user.inst = request.POST['inst']
             user.telegram = request.POST['telegram']
             user.x_network = request.POST['x_network']
+            print(request.POST)
 
             # Обработка загруженных изображений
             fs = FileSystemStorage(location='media/images')
@@ -44,7 +45,8 @@ def editprofile(request):
                 {'url': photo.url, 'name': photo.name}
                 for photo in [user.photo1, user.photo2, user.photo3, user.photo4, user.photo5, user.photo6] if photo
             ]
-            remaining_slots = list(range(1, 6 - len(images) + 1))  # Оставшиеся слоты
+            remaining_slots = list(range(len(images) + 1, 7))  # Оставшиеся слоты
+            print(remaining_slots)
             return render(request, 'editprofile.html', {'user': user, 'images': images, 'remaining_slots': remaining_slots})
     else:
         return redirect('login')
@@ -54,7 +56,6 @@ def delete_image(request, image_id):
 	if request.user.is_authenticated:
 		user = request.user
 		if image_id == 1:
-			
 			user.photo1 = None
 		elif image_id == 2:
 			user.photo2 = None
@@ -71,7 +72,7 @@ def delete_image(request, image_id):
 	else:
 		return redirect('login')
 	
-def upload_image(request):
+def upload_image(request, image_id):
 	if request.user.is_authenticated:
 		user = request.user
 		if request.method == 'POST':

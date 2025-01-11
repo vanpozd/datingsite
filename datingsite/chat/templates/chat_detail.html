@@ -51,6 +51,9 @@
         </div>
 
         <div id="chat-container">
+            {% if not messages %}
+            <small class="text-muted">No messages yet.</small>
+            {% endif %}
             {% for message in messages %}
                 <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
                     <p class="sender">
@@ -69,8 +72,14 @@
         <div class="form-container">
             <form id="chat-form" action="send/" method="POST" class="form-inline">
                 {% csrf_token %}
-                <textarea id="message-input" name="content" rows="3" class="form-control w-75 mr-2" placeholder="Type your message here..."></textarea>
-                <button type="submit" class="btn btn-primary">Send</button>
+                <div class="col-12 mb-3">
+                    <textarea id="message-input" name="content" rows="3" class="form-control w-100 mr-2" placeholder="Type your message here..."></textarea>
+                </div>
+                <div class="col-12 mb-3">
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </div>
+                </div>
             </form>
         </div>
     </div>

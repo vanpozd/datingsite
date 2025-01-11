@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render,redirect
 from django.forms import ValidationError
+from django.core.files.storage import FileSystemStorage
 
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -135,20 +136,26 @@ def user_register2(request):
     return render(request, 'register2.html', {'form': form})
 
 def user_register3(request):
-    user_id = request.session.get('user_id')
-    if not user_id:
-        return redirect('register1')
-    user = CustomUser.objects.get(id=user_id)
-    user.liked_profiles = None
-    if request.method == "POST":
-        form = forms.UserPhotoForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save(user = user)
-            messages.success(request, 'Registration complete!')
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            user_id = request.session.get('user_id')
+            if not user_id:
+                messages.error(request, 'Please complete previous steps')
+                return redirect('register1')  # Перенаправление на первый шаг регистрации
+
+            user = CustomUser.objects.get(id=user_id)
+            user.liked_profiles = None  # Обнуление списка лайкнутых профилей, если необходимо
+            fs = FileSystemStorage(location='media/images')
+            for i in range(1, 7):
+                photo_field = f'photo{i}'
+                if photo_field in request.FILES:
+                    photo = request.FILES[photo_field]
+                    filename = fs.save(photo.name, photo)
+                    setattr(user, f'photo{i}', f'images/{filename}')
+
+            user.save()
             return redirect('recommendations')
         else:
-            print(form.errors)
-            messages.error(request, 'Invalid input')
+            return render(request, 'register3.html', {'remaining_slots': [2,3,4,5,6]})
     else:
-        form = forms.UserPhotoForm(instance=user)
-    return render(request, 'register3.html', {'form': form})
+        return redirect('login')

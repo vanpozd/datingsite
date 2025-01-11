@@ -1,43 +1,97 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block title %}
-Register
-{% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+        }
 
-{% block messages %}
-{% if form.errors %}
-<div class="alert alert-danger" role="alert">
-	<strong>Error in the form!</strong> Please correct the errors.
-</div>
-{{ form.errors }}
-{% endif %}
-{% if messages %}
-<div class="alert alert-info" role="alert">
-	<ul class="list-unstyled">
-		{% for message in messages %}
-		<li>{{ message }}</li>
-		{% endfor %}
-	</ul>
-</div>
-{% endif %}
-{% endblock %}
+        .image-container {
+            position: relative;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            background: #f8f9fa;
+        }
 
-{% block content %}
-<div class="login-container">
-	<h2>Registration</h2>
-	<form method="post" enctype="multipart/form-data">
-		{% csrf_token %}
-		{{ form.as_p }}
-		<button type="submit">Submit</button>
-	</form>
-</div>
+        .image-container img {
+            max-width: 100%;
+            max-height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
 
-<script>
-	document.addEventListener('keydown', function (event) {
-		if (event.key === 'Enter') {
-			event.preventDefault();
-			document.getElementById('register_button').click();
-		}
-	});
-</script>
-{% endblock %}
+        .btn-upload {
+            display: block;
+            margin: 10px auto 0;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="form-header">
+            <h2>Edit Profile Pictures</h2>
+            <p>Upload and preview your profile pictures instantly. Save them to the database when ready.</p>
+        </div>
+
+        <form action="/auth/register3/" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="image-grid">
+                <!-- Image 1 -->
+                <div class="image-container">
+                    <img id="preview-1" src="{{ images.0.url|default:'https://via.placeholder.com/150' }}" alt="Profile Image">
+                    <input type="file" id="photoInput1" name="photo1" class="d-none" accept="image/*" onchange="showPreview(event, 1)" required>
+                    <label for="photoInput1" class="btn btn-primary btn-upload">Upload Photo</label>
+                </div>
+
+                <!-- Add more slots dynamically if needed -->
+                {% for i in remaining_slots %}
+                <div class="image-container">
+                    <img id="preview-{{ i }}" src="https://via.placeholder.com/150" alt="Profile Image">
+                    <input type="file" id="photoInput{{ i }}" name="photo{{ i }}" class="d-none" accept="image/*" onchange="showPreview(event, {{ i }})">
+                    <label for="photoInput{{ i }}" class="btn btn-primary btn-upload">Upload Photo</label>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="text-right mt-4">
+                <button type="submit" class="btn btn-success">Save Changes</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function showPreview(event, index) {
+            const input = event.target;
+            const preview = document.getElementById(`preview-${index}`);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result; // Set the image source to the uploaded file
+                }
+                reader.readAsDataURL(input.files[0]); // Read the uploaded file
+            }
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+
+</html>
