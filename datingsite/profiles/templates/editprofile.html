@@ -110,10 +110,10 @@
 						<!-- Existing images -->
 						{% for image in images %}
 						<div class="image-container">
-							<img src="{{ image.url }}" alt="Profile Image">
+							<img id="preview-{{ forloop.counter }}" src="{{ image.url }}" alt="Profile Image">
 							<div class="image-buttons">
 								<label for="photoInput{{ forloop.counter }}" class="btn btn-primary chng-btn">Change</label>
-								<input type="file" id="photoInput{{ forloop.counter }}" name="photo{{ forloop.counter }}" class="d-none">
+								<input type="file" id="photoInput{{ forloop.counter }}" name="photo{{ forloop.counter }}" class="d-none" accept="image/*" onchange="showPreview(event, {{ forloop.counter }})">
 								<a href="/profile/delete_image/{{ forloop.counter }}" class="btn btn-danger del-btn">Delete</a>
 							</div>
 						</div>
@@ -139,18 +139,18 @@
 		</form>
 	</div>
 	<script>
-        function showPreview(event, index) {
-            const input = event.target;
-            const preview = document.getElementById(`preview-${index}`);
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    preview.src = e.target.result; // Set the image source to the uploaded file
-                }
-                reader.readAsDataURL(input.files[0]); // Read the uploaded file
-            }
-        }
-    </script>
+		function showPreview(event, index) {
+			const input = event.target;
+			const preview = document.getElementById(`preview-${index}`);
+			if (input.files && input.files[0]) {
+				const reader = new FileReader();
+				reader.onload = function (e) {
+					preview.src = e.target.result; // Оновлення зображення
+				}
+				reader.readAsDataURL(input.files[0]); // Читання завантаженого файлу
+			}
+		}
+	</script>
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>

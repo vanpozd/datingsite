@@ -18,15 +18,31 @@ def get_liked_profile_id(request):
         return liked_user
     return None
 
+def get_rec_user(request, user_id=0):
+    sex_param = 'female' if request.user.sex == 'male' else 'male'
+    if request.user.main_goal == 'friendship':
+        return CustomUser.objects.exclude(id=request.user.id).filter(age__gte=request.user.age-2, 
+                                                                 age__lte=request.user.age+2,
+                                                                 main_goal=request.user.main_goal,
+                                                                 id__gt = user_id).order_by('?').first()
+    
+    return CustomUser.objects.exclude(id=request.user.id).filter(age__gte=request.user.age-2, 
+                                                                 age__lte=request.user.age+2,
+                                                                 sex=sex_param,
+                                                                 main_goal=request.user.main_goal,
+                                                                 id__gt = user_id).order_by('?').first()
+
 def recom(request):
     if request.user.is_authenticated:
         like_flg = False
         liked_user = get_liked_profile_id(request)
         if liked_user is None:
-            liked_user = CustomUser.objects.exclude(id=request.user.id).filter(age__gte=request.user.age-2, age__lte=request.user.age+2).first()
+            liked_user = get_rec_user(request)
+            print(liked_user)
         else:
             liked_user = CustomUser.objects.get(id=liked_user)
             like_flg = True 
+        print(liked_user)
         images = [photo.url for photo in [liked_user.photo1, liked_user.photo2, liked_user.photo3, liked_user.photo4, liked_user.photo5, liked_user.photo6] if photo]
         return render(request, 'recommendations.html', {'rec_user': liked_user, 'images': images, 'like_flg': like_flg})
     else:
@@ -61,13 +77,12 @@ def handle_action(request):
         user = request.user
         liked_user_id = get_liked_profile_id(request)
         if liked_user_id is not None:
-            print("liked_user_id is not None")
             like_flg = True 
             next_user = CustomUser.objects.get(id=liked_user_id)
         else:
-            next_user = CustomUser.objects.exclude(id=request.user.id).filter(age__gte=user.age-2, age__lte=user.age+2, id__gt=user_id).first()    
+            next_user = get_rec_user(request, user_id)
         if not next_user:
-            next_user = CustomUser.objects.exclude(id=request.user.id).filter(age__gte=user.age-2, age__lte=user.age+2).first()
+            next_user = get_rec_user(request)
   
         images = [photo.url for photo in [next_user.photo1, next_user.photo2, next_user.photo3, next_user.photo4, next_user.photo5, next_user.photo6] if photo]
         
