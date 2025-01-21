@@ -122,7 +122,7 @@
 						<!-- Empty slots for new images -->
 						{% for i in remaining_slots %}
 						<div class="image-container">
-							<img id="preview-{{ i }}" src="https://via.placeholder.com/150" alt="Profile Image">
+							<img id="preview-{{ i }}" src="https://via.placeholder.com/150">
 							<label for="photoInputNew{{ i }}" class="btn btn-primary">Upload</label>
 							<input type="file" id="photoInputNew{{ i }}" name="photo{{ i }}" class="d-none" accept="image/*" onchange="showPreview(event, {{ i }})">
 						</div>

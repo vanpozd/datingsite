@@ -45,8 +45,7 @@ def editprofile(request):
                 {'url': photo.url, 'name': photo.name}
                 for photo in [user.photo1, user.photo2, user.photo3, user.photo4, user.photo5, user.photo6] if photo
             ]
-            remaining_slots = list(range(len(images) + 1, 7))  # Оставшиеся слоты
-            print(remaining_slots)
+            remaining_slots = list(range(len(images) + 1, 7))
             return render(request, 'editprofile.html', {'user': user, 'images': images, 'remaining_slots': remaining_slots})
     else:
         return redirect('login')
